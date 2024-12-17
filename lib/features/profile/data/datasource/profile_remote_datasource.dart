@@ -24,4 +24,16 @@ class ProfileRemoteDatasource {
       throw Exception('Failed to fetch profile: $e');
     }
   }
+
+  Future<void> updateProfile(
+      {required String userId,
+      required String displayName,
+      required String phone,
+      String? profileImage}) async {
+    final Map<String,dynamic> data = {'displayName': displayName, 'phone': phone};
+    if (profileImage != null) {
+      data['profileImage'] = profileImage;
+    }
+    await firestore.collection('users').doc(userId).update(data);
+  }
 }

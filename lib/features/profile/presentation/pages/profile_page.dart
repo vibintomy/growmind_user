@@ -25,7 +25,10 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: textColor,
         body: BlocProvider(
           create: (_) => ProfileBloc(GetProfile(ProfileRepoImpl(
-              ProfileRemoteDatasource(FirebaseFirestore.instance))))
+              ProfileRemoteDatasource(FirebaseFirestore.instance)),
+              ),
+              ProfileRepoImpl(ProfileRemoteDatasource(FirebaseFirestore.instance))
+              )
             ..add(LoadProfileEvent(user!.uid ?? "")),
           child:
               BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
