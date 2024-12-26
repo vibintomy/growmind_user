@@ -46,20 +46,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
         onNotification: (notification) {
          
            if (notification.direction == ScrollDirection.reverse) {
+                     
+               bottomNavBarVisible.value = true;
            
-            Future.delayed(const Duration(seconds: 100), () {
-               bottomNavBarVisible.value = false;
-            });
           } else if (notification.direction == ScrollDirection.forward) {
-             
-            Future.delayed(const Duration(seconds: 100), () {
-             if(!bottomNavBarVisible.value){
+                               
                bottomNavBarVisible.value = true; 
-             }
-            });
-          }
-          
          
+          }
+                  
           return true;
         },
         child: IndexedStack(

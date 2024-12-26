@@ -10,7 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       : _firebaseAuth = firebasepath,
         super(AuthInitial()) {
     on<LoginRequested>(onLoginRequested);
-    on<SignupRequested>(onSignupRequested);
+    // on<SignupRequested>(onSignupRequested);
   }
 
   Future<void> onLoginRequested(

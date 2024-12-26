@@ -8,9 +8,10 @@ import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_bloc.dart';
 import 'package:growmind/features/auth/presentation/bloc/signup_bloc/bloc/signup_bloc.dart';
 import 'package:growmind/features/auth/presentation/pages/login_page.dart';
-import 'package:growmind/features/auth/presentation/pages/signup_page.dart';
+import 'package:growmind/features/auth/presentation/pages/splash_screen.dart';
+import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
 
-import 'package:growmind/features/home/presentation/pages/home_page.dart';
+
 
 
 void main() async {
@@ -49,15 +50,12 @@ class MyApp extends StatelessWidget {
 ,
               color: textColor,
               debugShowCheckedModeBanner: false,
-              initialRoute: '/login',
-              routes: {'/login': (context) => LoginPage(),
-              '/signup':(context)=>SignupPage(),
-              '/home':(context)=> const HomePage(),
+              initialRoute: '/splashscreen',
+              routes: {'/splashscreen': (context) =>const SplashScreen(),
+              '/bottomnavigation':(context)=>const BottomNavigation(),
+              '/login':(context)=>  LoginPage(),
                 },
-              builder: (context, widget) {
-                ScreenUtil.init(context);
-                return widget!;
-              },
+              
             ));
       },
     );

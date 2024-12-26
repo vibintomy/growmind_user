@@ -1,10 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/core/utils/validator.dart';
+import 'package:growmind/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:growmind/features/auth/data/models/user_model.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_bloc.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_event.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_state.dart';
+import 'package:growmind/features/auth/presentation/pages/forgot_password.dart';
 import 'package:growmind/features/auth/presentation/pages/signup_page.dart';
 import 'package:growmind/features/auth/presentation/widgets/googlebutton.dart';
 import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
@@ -67,18 +72,7 @@ class LoginPage extends StatelessWidget {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15)))),
                           keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'please enter valid mail';
-                            }
-                            if (!RegExp(
-                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
-                                .hasMatch(value)) {
-                              return 'Please enter a valid email address';
-                            }
-
-                            return null;
-                          },
+                        validator: validateEmail,
                         ),
                         kheight,
                         TextFormField(
@@ -96,24 +90,28 @@ class LoginPage extends StatelessWidget {
                                   },
                                   child: const Icon(Icons.remove_red_eye)),
                               hintText: 'password'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'please enter the password';
-                            }
-
-                            if (value.length <= 3 || value.length >= 15) {
-                              return 'please enter a valid password';
-                            }
-                            return null;
-                          },
+                               validator: validatePassword,
                         ),
                         kheight,
-                        const Text(
-                          'Agree to terms and condtions',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
+                    
+                       
+                         GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ForgotPassword()));
+                          },
+                          child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Forgot password ?',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: mainColor),
+                            ),
+                          ),
                         ),
-                        kheight1,
+                        kheight,
                         Center(
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -167,6 +165,7 @@ class LoginPage extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.bold),
                             ),
+                            
                             kwidth,
                             GestureDetector(
                               onTap: () {
@@ -202,20 +201,43 @@ class LoginPage extends StatelessWidget {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Fill the tables')));
-    }
+    } 
 
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-      if (userCredential.user?.emailVerified == false) {
+
+      final user = userCredential.user;
+
+      if (user == null || user.emailVerified == false) {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.green,
-              content: Text('Successfuly logged in')));
-      
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text('Please verify your email')));
+        return;
       }
-      // ignore: use_build_context_synchronously
+
+      final userId = user.uid;
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      if (!userDoc.exists) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text('NO Profile data found . please contact support')));
+        return;
+      }
+
+      final AuthLocalDataSource authLocalDataSource = AuthLocalDataSourceImpl();
+
+      final userModel = UserModel(
+          id: userId,
+          email: email,
+          displayName: user.displayName??'',
+          phone: user.phoneNumber?? '');
+      await authLocalDataSource.cacheUser(userModel);
       BlocProvider.of<AuthBloc>(context).add(LoginRequested(email, password));
       // ignore: use_build_context_synchronously
       Navigator.pushReplacement((context),
@@ -227,13 +249,11 @@ class LoginPage extends StatelessWidget {
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Wrong password entered';
       } else {
-        errorMessage ='Check the inputs';
+        errorMessage = 'Check the inputs';
       }
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(errorMessage)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.redAccent, content: Text(errorMessage)));
     }
   }
 }

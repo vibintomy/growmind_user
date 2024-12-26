@@ -3,12 +3,14 @@ import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/auth/presentation/pages/login_page.dart';
 import 'package:growmind/features/profile/data/datasource/profile_remote_datasource.dart';
 import 'package:growmind/features/profile/data/repo/profile_repo.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
+import 'package:growmind/features/profile/presentation/pages/alert_box.dart';
 import 'package:growmind/features/profile/presentation/pages/update_profile.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -24,11 +26,13 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
         backgroundColor: textColor,
         body: BlocProvider(
-          create: (_) => ProfileBloc(GetProfile(ProfileRepoImpl(
-              ProfileRemoteDatasource(FirebaseFirestore.instance)),
+          create: (_) => ProfileBloc(
+              GetProfile(
+                ProfileRepoImpl(
+                    ProfileRemoteDatasource(FirebaseFirestore.instance)),
               ),
-              ProfileRepoImpl(ProfileRemoteDatasource(FirebaseFirestore.instance))
-              )
+              ProfileRepoImpl(
+                  ProfileRemoteDatasource(FirebaseFirestore.instance)))
             ..add(LoadProfileEvent(user!.uid ?? "")),
           child:
               BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
@@ -94,9 +98,10 @@ class ProfilePage extends StatelessWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>  EditProfile()));
+                                        builder: (context) =>
+                                            const EditProfile()));
                               },
-                              child:const Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.person),
                                   kwidth,
@@ -111,7 +116,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             kheight2,
-                         const   Row(
+                            const Row(
                               children: [
                                 Icon(Icons.wallet),
                                 kwidth,
@@ -124,7 +129,7 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             kheight2,
-                         const   Row(
+                            const Row(
                               children: [
                                 Icon(Icons.notifications),
                                 kwidth,
@@ -137,7 +142,7 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             kheight2,
-                          const  Row(
+                            const Row(
                               children: [
                                 Icon(Icons.security),
                                 kwidth,
@@ -150,7 +155,7 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             kheight2,
-                          const  Row(
+                            const Row(
                               children: [
                                 Icon(Icons.help_center),
                                 kwidth,
@@ -163,18 +168,7 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             kheight2,
-                        const    Row(
-                              children: [
-                                Icon(Icons.logout),
-                                kwidth,
-                                Text(
-                                  'Log Out',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Spacer(),
-                                Icon(Icons.arrow_forward),
-                              ],
-                            ),
+                            alertBox(context),
                           ],
                         )
                       ],
@@ -194,4 +188,6 @@ class ProfilePage extends StatelessWidget {
           }),
         ));
   }
+
+  
 }
