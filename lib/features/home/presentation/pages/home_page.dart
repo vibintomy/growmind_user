@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
+import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
@@ -87,7 +89,38 @@ class HomePage extends StatelessWidget {
                ),
                child:Align(
                 alignment: Alignment.centerRight,
-                child: const Icon(Icons.search)),)
+                child: const Icon(Icons.search)),),
+                kheight1,
+                Container(height: 200,width: MediaQuery.of(context).size.width,
+                decoration:const BoxDecoration(
+                  color: Color(0xFFFEA384)
+,                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  boxShadow: [BoxShadow(
+                    offset: Offset(0, 3),
+                    spreadRadius: 0,
+                    blurRadius: 3,
+                    color: greyColor
+                  )],
+                  
+                ),child:Column(
+                  children: [
+                  Align(
+                   alignment: Alignment.topLeft,
+                    child: SizedBox(
+                      height: 100,
+                      width: 150,
+                      child: CustomPaintWidget(),),
+                  ),
+                    Align(
+                   alignment: Alignment.bottomRight,
+                    child: SizedBox(
+                      height: 100,
+                      width: 150,
+                      child: CustomWavyShape()),
+                  )
+                  ],
+                ) ,
+                )
               
               ],
             ),
