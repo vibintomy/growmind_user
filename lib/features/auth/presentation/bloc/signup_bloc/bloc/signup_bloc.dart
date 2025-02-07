@@ -23,6 +23,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         'email': event.email,
         'phone': event.phone,
         'uid': userCredential.user!.uid,
+        'imageUrl':event.imageUrl
       });
 
       final user = userCredential.user;

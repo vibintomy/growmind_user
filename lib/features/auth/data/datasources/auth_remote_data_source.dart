@@ -3,7 +3,7 @@ import 'package:growmind/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> login(String email, String password);
-  Future<UserModel> signup(String email, String password, String displayName,String phone);
+  Future<UserModel> signup(String email, String password, String displayName,String phone,String imageUrl);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -21,7 +21,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             id: firebaseuser.uid,
             email: firebaseuser.email ?? '',
             displayName: firebaseuser.displayName ?? '',
-            phone: firebaseuser.phoneNumber??'');
+            phone: firebaseuser.phoneNumber??'',
+            imageUrl: firebaseuser.photoURL
+            
+            );
       } else {
         throw Exception('Failed to retrieve user details');
       }
@@ -32,7 +35,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> signup(
-      String email, String password, String displayName,String phone) async {
+      String email, String password, String displayName,String phone,String imageUrl) async {
     try {
       final UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -43,7 +46,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             id: firebaseUser.uid,
             email: firebaseUser.email ?? '',
             displayName: firebaseUser.displayName ?? '',
-            phone: firebaseUser.phoneNumber??'');
+            phone: firebaseUser.phoneNumber??'',
+            imageUrl: firebaseUser.photoURL
+           );
       } else {
         throw Exception('Failed to retrieve user details afrer signUp');
       }

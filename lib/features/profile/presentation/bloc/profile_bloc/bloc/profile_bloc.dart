@@ -1,13 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:growmind/features/profile/domain/repo/profile_repo.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetProfile getProfile;
-  final ProfileRepo profileRepo;
-  ProfileBloc(this.getProfile, this.profileRepo) : super(ProfileInitial()) {
+  ProfileBloc(this.getProfile) : super(ProfileInitial()) {
     on<LoadProfileEvent>((event, emit) async {
       emit(ProfileLoading());
 
@@ -18,22 +16,5 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileError('Failed to load profile : $e'));
       }
     });
-    on<UpdateProfileEvent>(onUpdateProfile);
-  }
-
-  Future<void> onUpdateProfile(
-      UpdateProfileEvent event, Emitter<ProfileState> emit) async {
-    emit(ProfileLoading());
-    try {
-      await profileRepo.updateProfile(
-          userId: event.userId,
-          displayName: event.displayName,
-          phone: event.phone,
-          profileImage: event.profileImage);
-      final updateProfile = await getProfile(event.userId);
-      emit(ProfileLoaded(updateProfile));
-    } catch (e) {
-      emit(ProfileError('Failed to update profile : $e'));
-    }
   }
 }

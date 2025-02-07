@@ -1,21 +1,43 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 
 class Cloudinary {
-  final String cloudName = 'dj01ka9ga';
-  final String apiKey = '642889674424333';
-  final String apiSecret = 'EB9XFjTTm5kNygU6hxJMls79Tj8';
+  final String cloudName;
+  final String apiKey;
+  final String apiSecret;
 
-  Future<String> uploadImage(File imageFile) async {
-    final url =
-        Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/image/upload');
-    final request = http.MultipartRequest('POST', url)
+  Cloudinary(
+      {required this.cloudName, required this.apiKey, required this.apiSecret});
+
+  factory Cloudinary.signedConfig(
+      {required String cloudName,
+      required String apiKey,
+      required String apiSecret}) {
+    return Cloudinary(
+        cloudName: cloudName, apiKey: apiKey, apiSecret: apiSecret);
+  }
+
+  Future<String> uploadFile(File file, {String? resourceType}) async {
+    // Determine resource type based on file extension if not provided
+    final extension = file.path.split('.').last.toLowerCase();
+
+    final determinedResourceType = resourceType ??
+        (extension == 'pdf'
+            ? 'raw'
+            : (extension == 'mp4' || extension == 'avi' || extension == 'mov'
+                ? 'video'
+                : 'image'));
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://api.cloudinary.com/v1_1/$cloudName/$determinedResourceType/upload'),
+    )
       ..fields['upload_preset'] = 'document_preset'
       ..fields['api_key'] = apiKey
       ..fields['timestamp'] = DateTime.now().millisecondsSinceEpoch.toString()
-      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+      ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final response = await request.send();
 
@@ -24,7 +46,20 @@ class Cloudinary {
       final data = json.decode(responseData);
       return data['secure_url'];
     } else {
-      throw Exception('Failed to upload image to cloudinary ');
+      throw Exception(
+          'Failed to upload file to Cloudinary: ${response.statusCode}');
     }
+  }
+
+  Future<String> uploadImage(File imageFile) async {
+    return await uploadFile(imageFile, resourceType: 'image');
+  }
+
+  Future<String> uploadPdf(File pdfFile) async {
+    return await uploadFile(pdfFile, resourceType: 'raw');
+  }
+
+  Future<String> uploadVideo(File videoFile) async {
+    return await uploadFile(videoFile, resourceType: 'video');
   }
 }

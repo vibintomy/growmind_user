@@ -1,4 +1,6 @@
+
 import 'package:growmind/features/profile/domain/entities/profile.dart';
+
 
 abstract class ProfileState {}
 

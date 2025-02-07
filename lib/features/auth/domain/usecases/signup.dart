@@ -7,9 +7,9 @@ class Signup {
   Signup(this.repository);
 
   Future<User> execute(
-      String email, String password, String displayName, String phone) async {
+      String email, String password, String displayName, String phone,String imageUrl) async {
     try {
-      final user = await repository.signup(email, password, displayName, phone);
+      final user = await repository.signup(email, password, displayName, phone,imageUrl);
 
       final firebaseUser = FirebaseAuth.instance.currentUser;
       await firebaseUser?.reload();

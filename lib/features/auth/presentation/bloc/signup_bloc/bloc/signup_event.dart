@@ -12,13 +12,15 @@ class SignupSubmitted extends SignupEvent {
   final String email;
   final String password;
   final String phone;
+  final String? imageUrl;
 
 const  SignupSubmitted(
       {required this.displayName,
       required this.email,
       required this.password,
-      required this.phone});
+      required this.phone,
+      this.imageUrl});
 
   @override
-  List<Object> get props => [displayName, email, password, phone];
+  List<Object> get props => [displayName, email, password, phone,imageUrl!];
 }
