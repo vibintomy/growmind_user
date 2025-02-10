@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +9,8 @@ import 'package:growmind/features/profile/presentation/pages/update_profile.dart
 import 'package:growmind/features/profile/presentation/widgets/aler_box.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
+ const ProfilePage({super.key});
+ 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -88,7 +87,9 @@ class ProfilePage extends StatelessWidget {
                                           ? Image.network(profile.imageUrl!,
                                               fit: BoxFit.cover)
                                           : Image.asset(
-                                              'assets/logo/user.png',fit: BoxFit.fill,))),
+                                              'assets/logo/user.png',
+                                              fit: BoxFit.fill,
+                                            ))),
                             ],
                           ),
                         ),

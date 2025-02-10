@@ -20,7 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   final ValueNotifier<bool> bottomNavBarVisible = ValueNotifier(true);
 
   final List<Widget> listOfPages = [
-    const HomePage(),
+     HomePage(),
     const ChatPage(),
     const FavouritePages(),
     const ProfilePage()
