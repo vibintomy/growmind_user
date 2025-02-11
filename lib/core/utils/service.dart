@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:growmind/core/utils/cloudinary.dart';
+import 'package:growmind/features/home/data/datasource/categories_remote_datasource.dart';
+import 'package:growmind/features/home/data/repo/categories_repo_impl.dart';
+import 'package:growmind/features/home/domain/repositories/category_repository.dart';
+import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
+import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/profile/data/datasource/profile_remote_datasource.dart';
 import 'package:growmind/features/profile/data/repo/profile_repo.dart';
 import 'package:growmind/features/profile/data/repo/update_profile_repoimpl.dart';
@@ -21,20 +26,28 @@ void setUp() {
       ));
   getIt.registerLazySingleton<FirebaseFirestore>(
       () => FirebaseFirestore.instance);
-       getIt.registerLazySingleton<ProfileRemoteDatasource>(
+  getIt.registerLazySingleton<ProfileRemoteDatasource>(
       () => ProfileRemoteDatasource(getIt<FirebaseFirestore>()));
-getIt.registerLazySingleton<ProfileRepo>(
+  getIt.registerLazySingleton<ProfileRepo>(
       () => ProfileRepoImpl(getIt<ProfileRemoteDatasource>()));
- getIt.registerLazySingleton<UpdateProfileRepo>(() =>
+  getIt.registerLazySingleton<UpdateProfileRepo>(() =>
       UpdateProfileRepimpl(getIt<Cloudinary>(), getIt<FirebaseFirestore>()));
-  
+  getIt.registerLazySingleton<CategoriesRemoteDatasource>(
+      () => CategoriesRemoteDatasource(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<CategoryRepository>(
+      () => CategoriesRepoImpl(getIt<CategoriesRemoteDatasource>()));
+
 // Domain Layer
- getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
-      getIt.registerLazySingleton(
+  getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
+  getIt.registerLazySingleton(
       () => UpdateProfileUsecases(getIt<UpdateProfileRepo>()));
+  getIt.registerLazySingleton(
+      () => CategoryUsecases(getIt<CategoryRepository>()));
   // Presentation Layer
-  
+
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
-   getIt
+  getIt
       .registerFactory(() => ProfileUpdateBloc(getIt<UpdateProfileUsecases>()));
+  getIt.registerFactory(
+      () => FetchCategoriesBloc(usecases: getIt<CategoryUsecases>()));
 }

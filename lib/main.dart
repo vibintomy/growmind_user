@@ -11,7 +11,9 @@ import 'package:growmind/features/auth/presentation/bloc/signup_bloc/bloc/signup
 import 'package:growmind/features/auth/presentation/pages/login_page.dart';
 import 'package:growmind/features/auth/presentation/pages/splash_screen.dart';
 import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
+import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/animation_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
 import 'package:growmind/features/profile/domain/usecases/update_profile_usecases.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
@@ -46,7 +48,8 @@ class MyApp extends StatelessWidget {
                       firestore: FirebaseFirestore.instance)),
                              BlocProvider(create: (context)=> ProfileBloc(getIt<GetProfile>(),)),
                                   BlocProvider(create: (context)=>ProfileUpdateBloc(getIt<UpdateProfileUsecases>())),
-                                  BlocProvider(create: (context)=>AnimationCubit()..startRotation())
+                                  BlocProvider(create: (context)=>AnimationCubit()..startRotation()),
+                                  BlocProvider(create: (context)=> FetchCategoriesBloc(usecases: getIt<CategoryUsecases>()))
             ],
             child: MaterialApp(
               theme: ThemeData(

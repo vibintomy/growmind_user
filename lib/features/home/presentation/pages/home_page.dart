@@ -1,9 +1,9 @@
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/home/presentation/pages/categories.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
@@ -193,7 +193,7 @@ class HomePage extends StatelessWidget {
                               color: mainColor),
                         ),
                         Icon(
-                          Icons.arrow_forward_ios,
+                          Icons.arrow_downward,
                           size: 14,
                           color: mainColor,
                         )
@@ -202,7 +202,14 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
                 kheight,
-                spinningContainer()
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Categories()));
+                    },
+                    child: spinningContainer())
               ],
             ),
           ),
@@ -210,5 +217,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
 }
