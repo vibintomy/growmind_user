@@ -1,5 +1,6 @@
 import 'package:growmind/features/home/domain/entities/category.dart';
 
+
 abstract class FetchCategoriesState {}
 
 class FetchCategoriesInitial extends FetchCategoriesState {}
@@ -7,9 +8,10 @@ class FetchCategoriesInitial extends FetchCategoriesState {}
 class FetchCategoriesLoading extends FetchCategoriesState {}
 
 class FetchCategoriesLoaded extends FetchCategoriesState {
-    final List<FetchCategory> value;
+  final List<FetchCategory> value;
   FetchCategoriesLoaded(this.value);
 }
+
 
 class FetchCategoriesError extends FetchCategoriesState {
   final String error;

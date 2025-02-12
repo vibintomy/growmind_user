@@ -79,23 +79,49 @@ class HomePage extends StatelessWidget {
                       color: Color.fromARGB(255, 112, 110, 110)),
                 ),
                 kheight1,
-                Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                      color: textColor,
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(0, 3),
-                            spreadRadius: 0,
-                            blurRadius: 3,
-                            color: greyColor)
-                      ],
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
-                  child: const Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(Icons.search)),
+                 Container(
+                height: 50,
+                width: 350,
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                    color: textColor,
+                    boxShadow: [
+                      BoxShadow(
+                          offset: Offset(0, 3),
+                          spreadRadius: 0,
+                          blurRadius: 3,
+                          color: greyColor)
+                    ]),
+                child: TextField(
+                  showCursor: false,
+                  decoration: InputDecoration(
+                      hintText: 'Search',
+                      suffixIcon: Padding(
+                        padding:
+                            const EdgeInsets.only(right: 10, top: 10, bottom: 10),
+                        child: Container(
+                          height: 15,
+                          width: 15,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                              color: mainColor,
+                          ),
+                          child: const Icon(
+                            Icons.search,
+                            color: textColor,
+                          ),
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        
+                          borderSide: BorderSide.none,
+                          
+                      )),
+                  onChanged: (value) {
+                  
+                  },
                 ),
+              ),
                 kheight1,
                 CarouselSlider.builder(
                   // carouselController: carouselController,

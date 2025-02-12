@@ -6,6 +6,8 @@ class CategoryUsecases {
   CategoryUsecases(this.categoryRepository);
 
   Future<List<FetchCategory>> call() {
-  return  categoryRepository.getCategory();
+    return categoryRepository.getCategory();
   }
+
+  
 }

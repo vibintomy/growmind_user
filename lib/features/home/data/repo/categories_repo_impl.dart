@@ -12,12 +12,17 @@ class CategoriesRepoImpl extends CategoryRepository {
       if (categoryModel == null) {
         throw Exception('Empty value');
       }
-      return categoryModel.map((element) => FetchCategory(
-          category: element.category,
-          id: element.id,
-          imageUrl: element.imageUrl)).toList();
+     
+      return categoryModel
+          .map((element) => FetchCategory(
+              category: element.category,
+              id: element.id,
+              imageUrl: element.imageUrl))
+          .toList();
     } catch (e) {
       throw Exception('No values found');
     }
   }
+
+ 
 }

@@ -3,9 +3,13 @@ import 'package:get_it/get_it.dart';
 import 'package:growmind/core/utils/cloudinary.dart';
 import 'package:growmind/features/home/data/datasource/categories_remote_datasource.dart';
 import 'package:growmind/features/home/data/repo/categories_repo_impl.dart';
+import 'package:growmind/features/home/data/repo/fetch_course_repo_impl.dart';
 import 'package:growmind/features/home/domain/repositories/category_repository.dart';
+import 'package:growmind/features/home/domain/repositories/fetch_course_repo.dart';
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
+import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/profile/data/datasource/profile_remote_datasource.dart';
 import 'package:growmind/features/profile/data/repo/profile_repo.dart';
 import 'package:growmind/features/profile/data/repo/update_profile_repoimpl.dart';
@@ -36,6 +40,8 @@ void setUp() {
       () => CategoriesRemoteDatasource(getIt<FirebaseFirestore>()));
   getIt.registerLazySingleton<CategoryRepository>(
       () => CategoriesRepoImpl(getIt<CategoriesRemoteDatasource>()));
+       getIt.registerLazySingleton<FetchCourseRepo>(
+      () => FetchCourseRepoimpl(getIt<FirebaseFirestore>()));
 
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
@@ -43,6 +49,8 @@ void setUp() {
       () => UpdateProfileUsecases(getIt<UpdateProfileRepo>()));
   getIt.registerLazySingleton(
       () => CategoryUsecases(getIt<CategoryRepository>()));
+      getIt.registerLazySingleton(
+      () => FetchCourseUsecases(getIt<FetchCourseRepo>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -50,4 +58,5 @@ void setUp() {
       .registerFactory(() => ProfileUpdateBloc(getIt<UpdateProfileUsecases>()));
   getIt.registerFactory(
       () => FetchCategoriesBloc(usecases: getIt<CategoryUsecases>()));
+       getIt.registerFactory(() => FetchCourseBloc(getIt<FetchCourseUsecases>()));
 }

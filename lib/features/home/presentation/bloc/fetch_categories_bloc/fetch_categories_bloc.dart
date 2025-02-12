@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:growmind/features/home/data/models/categories_model.dart';
 import 'package:growmind/features/home/domain/entities/category.dart';
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_event.dart';
@@ -9,6 +8,8 @@ class FetchCategoriesBloc
     extends Bloc<FetchCategoriesEvent, FetchCategoriesState> {
   final CategoryUsecases usecases;
   List<FetchCategory> allCategories = [];
+
+
   FetchCategoriesBloc({required this.usecases})
       : super(FetchCategoriesInitial()) {
     on<GetCategoriesEvent>((event, emit) async {
@@ -21,6 +22,7 @@ class FetchCategoriesBloc
         emit(FetchCategoriesError(error: e.toString()));
       }
     });
+
     on<SearchCategoriesEvent>((event, emit) {
       final filteredCategories = allCategories
           .where((category) => category.category
@@ -29,5 +31,7 @@ class FetchCategoriesBloc
           .toList();
       emit(FetchCategoriesLoaded(filteredCategories));
     });
+
+   
   }
 }

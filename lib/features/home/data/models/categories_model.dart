@@ -15,3 +15,15 @@ class CategoriesModel {
     return {'id': id, 'category': category, 'imageUrl': imageUrl};
   }
 }
+
+class SubCategoriesModel {
+  final String id;
+  final String name;
+  SubCategoriesModel({required this.id, required this.name});
+  factory SubCategoriesModel.fromFirestore(Map<String, dynamic> json) {
+    return SubCategoriesModel(id: json['id'], name: json['name']);
+  }
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name};
+  }
+}
