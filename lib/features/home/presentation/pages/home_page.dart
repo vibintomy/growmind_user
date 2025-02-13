@@ -112,7 +112,7 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      border: OutlineInputBorder(
+                      border:const OutlineInputBorder(
                         
                           borderSide: BorderSide.none,
                           
@@ -233,7 +233,7 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Categories()));
+                              builder: (context) =>const Categories()));
                     },
                     child: spinningContainer())
               ],

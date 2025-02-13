@@ -13,9 +13,11 @@ import 'package:growmind/features/auth/presentation/pages/splash_screen.dart';
 import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
+import 'package:growmind/features/home/domain/usecases/get_tutor_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/animation_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_bloc.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
 import 'package:growmind/features/profile/domain/usecases/update_profile_usecases.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
@@ -52,7 +54,8 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=>ProfileUpdateBloc(getIt<UpdateProfileUsecases>())),
                                   BlocProvider(create: (context)=>AnimationCubit()..startRotation()),
                                   BlocProvider(create: (context)=> FetchCategoriesBloc(usecases: getIt<CategoryUsecases>())),
-                                  BlocProvider(create: (context)=> FetchCourseBloc(getIt<FetchCourseUsecases>()))
+                                  BlocProvider(create: (context)=> FetchCourseBloc(getIt<FetchCourseUsecases>())),
+                                  BlocProvider(create: (context)=> TutorBloc(getTutorUsecases: getIt<GetTutorUsecases>()))
             ],
             child: MaterialApp(
               theme: ThemeData(
