@@ -136,7 +136,7 @@ class DisplayCourse extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                               const Curriculum()));
+                                                Curriculum(section:sections)));
                                   },
                                   child: const Text(
                                     'Curriculum',
@@ -145,15 +145,17 @@ class DisplayCourse extends StatelessWidget {
                             ],
                           ),
                           kheight,
-                          Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                courseDescription,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: greyColor,
-                                    overflow: TextOverflow.ellipsis),
-                              ))
+                          Expanded(
+                            child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  courseDescription,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: greyColor,
+                                     ),
+                                )),
+                          )
                         ],
                       ),
                     ),
@@ -208,7 +210,7 @@ class DisplayCourse extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Enroll Course -$coursePrice/-',
+                          'Enroll Course  ₹$coursePrice/-',
                           style: const TextStyle(
                               fontSize: 20,
                               color: textColor,
