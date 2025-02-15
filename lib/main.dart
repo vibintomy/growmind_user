@@ -15,6 +15,7 @@ import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/get_tutor_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/animation_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/curriculum_bloc/curriculum_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_bloc.dart';
@@ -55,7 +56,8 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=>AnimationCubit()..startRotation()),
                                   BlocProvider(create: (context)=> FetchCategoriesBloc(usecases: getIt<CategoryUsecases>())),
                                   BlocProvider(create: (context)=> FetchCourseBloc(getIt<FetchCourseUsecases>())),
-                                  BlocProvider(create: (context)=> TutorBloc(getTutorUsecases: getIt<GetTutorUsecases>()))
+                                  BlocProvider(create: (context)=> TutorBloc(getTutorUsecases: getIt<GetTutorUsecases>())),
+                                  BlocProvider(create: (context)=> CurriculumBloc())
             ],
             child: MaterialApp(
               theme: ThemeData(

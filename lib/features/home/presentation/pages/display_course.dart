@@ -99,7 +99,7 @@ class DisplayCourse extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.camera),
+                              const Icon(Icons.videocam_outlined),
                               Text(
                                 '$coursePrice /-',
                                 style: const TextStyle(
