@@ -4,6 +4,7 @@ import 'package:growmind/features/home/domain/entities/section_entity.dart';
 import 'package:growmind/features/home/presentation/pages/curriculum.dart';
 import 'package:growmind/features/home/presentation/widgets/display_image_course.dart';
 import 'package:growmind/features/home/presentation/widgets/instructor_details.dart';
+import 'package:growmind/features/home/presentation/widgets/upi_payments.dart';
 
 class DisplayCourse extends StatelessWidget {
   final String id;
@@ -136,7 +137,7 @@ class DisplayCourse extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                Curriculum(section:sections)));
+                                                Curriculum(section: sections)));
                                   },
                                   child: const Text(
                                     'Curriculum',
@@ -151,9 +152,9 @@ class DisplayCourse extends StatelessWidget {
                                 child: Text(
                                   courseDescription,
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: greyColor,
-                                     ),
+                                    fontWeight: FontWeight.w700,
+                                    color: greyColor,
+                                  ),
                                 )),
                           )
                         ],
@@ -205,7 +206,13 @@ class DisplayCourse extends StatelessWidget {
                   height: 50,
                   child: FloatingActionButton(
                     backgroundColor: mainColor,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>PaymentScreen()
+                              ));
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
