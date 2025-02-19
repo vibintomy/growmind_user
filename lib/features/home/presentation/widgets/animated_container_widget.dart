@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:growmind/core/utils/constants.dart';
 
 class AnimatedWheel extends StatelessWidget {
   final double angle;
@@ -23,7 +22,7 @@ class AnimatedWheel extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Transform.rotate(
-          angle: angle, // Rotates the whole wheel
+          angle: angle, 
           child: Container(
             width: 200,
             height: 200,

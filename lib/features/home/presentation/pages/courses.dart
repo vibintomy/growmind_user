@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_event.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_state.dart';
+import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_event.dart';
 import 'package:growmind/features/home/presentation/pages/display_course.dart';
 
 class Courses extends StatelessWidget {
@@ -15,7 +18,8 @@ class Courses extends StatelessWidget {
   Widget build(BuildContext context) {
     final courseBloc = context.read<FetchCourseBloc>();
     courseBloc.add(FetchCourseEvent(categoryId: categoryId));
-
+ final user = FirebaseAuth.instance.currentUser;
+    context.read<PurchasedBloc>().add(PurchasedCourseEvent(user!.uid));
     return Scaffold(
       backgroundColor: textColor,
       appBar: AppBar(

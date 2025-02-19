@@ -14,11 +14,15 @@ import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_na
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/get_tutor_usecases.dart';
+import 'package:growmind/features/home/domain/usecases/purchase_course_usecases.dart';
+import 'package:growmind/features/home/domain/usecases/top_course_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/animation_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/curriculum_bloc/curriculum_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
 import 'package:growmind/features/profile/domain/usecases/update_profile_usecases.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
@@ -57,7 +61,9 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=> FetchCategoriesBloc(usecases: getIt<CategoryUsecases>())),
                                   BlocProvider(create: (context)=> FetchCourseBloc(getIt<FetchCourseUsecases>())),
                                   BlocProvider(create: (context)=> TutorBloc(getTutorUsecases: getIt<GetTutorUsecases>())),
-                                  BlocProvider(create: (context)=> CurriculumBloc())
+                                  BlocProvider(create: (context)=> CurriculumBloc()),
+                                  BlocProvider(create: (context)=> PurchasedBloc(getIt<PurchaseCourseUsecases>())),
+                                  BlocProvider(create: (context)=> TopCoursesBloc(getIt<TopCourseUsecases>()))
             ],
             child: MaterialApp(
               theme: ThemeData(

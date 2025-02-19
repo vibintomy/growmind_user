@@ -18,7 +18,7 @@ class ProfileModel {
         displayName: json['displayName'] ?? "",
         email: json['email'] ?? "",
         phone: json['phone'] ?? "",
-        imageUrl: json['imageUrl']??"");
+        imageUrl: json['imageUrl'] ?? "");
   }
   Map<String, dynamic> toJson() {
     return {
@@ -26,7 +26,7 @@ class ProfileModel {
       'displayName': displayName,
       'email': email,
       'phone': phone,
-      'imageUrl':imageUrl
+      'imageUrl': imageUrl,
     };
   }
 }
