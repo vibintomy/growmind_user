@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/home/domain/entities/section_entity.dart';
 import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_bloc.dart';
-import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_event.dart';
 import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_state.dart';
 import 'package:growmind/features/home/presentation/pages/curriculum.dart';
 import 'package:growmind/features/home/presentation/widgets/display_image_course.dart';

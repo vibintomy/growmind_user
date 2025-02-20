@@ -3,11 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_event.dart';
+import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_event.dart';
 import 'package:growmind/features/home/presentation/pages/categories.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
 import 'package:growmind/features/home/presentation/widgets/spinning_container.dart';
+import 'package:growmind/features/home/presentation/widgets/top_courses.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
@@ -21,6 +26,8 @@ class HomePage extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     final profilebloc = context.read<ProfileBloc>();
     profilebloc.add(LoadProfileEvent(user!.uid ?? ""));
+      context.read<PurchasedBloc>().add(PurchasedCourseEvent(user!.uid));
+    context.read<TopCoursesBloc>().add(FetchTopCourseEvent());
     return Scaffold(
       backgroundColor: textColor,
       body: Padding(
@@ -38,9 +45,9 @@ class HomePage extends StatelessWidget {
                       if (state is ProfileLoaded) {
                         final profile = state.profile;
                         return Text(
-                          'Hi,${profile.displayName.toUpperCase()}👋',
+                          'Hi,${profile.displayName.toUpperCase()}👋',overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
+                              fontSize: 22, fontWeight: FontWeight.bold,),
                         );
                       }
                       return const Text('');
@@ -79,49 +86,45 @@ class HomePage extends StatelessWidget {
                       color: Color.fromARGB(255, 112, 110, 110)),
                 ),
                 kheight1,
-                 Container(
-                height: 50,
-                width: 350,
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                    color: textColor,
-                    boxShadow: [
-                      BoxShadow(
-                          offset: Offset(0, 3),
-                          spreadRadius: 0,
-                          blurRadius: 3,
-                          color: greyColor)
-                    ]),
-                child: TextField(
-                  showCursor: false,
-                  decoration: InputDecoration(
-                      hintText: 'Search',
-                      suffixIcon: Padding(
-                        padding:
-                            const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                        child: Container(
-                          height: 15,
-                          width: 15,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
+                Container(
+                  height: 50,
+                  width: 350,
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      color: textColor,
+                      boxShadow: [
+                        BoxShadow(
+                            offset: Offset(0, 3),
+                            spreadRadius: 0,
+                            blurRadius: 3,
+                            color: greyColor)
+                      ]),
+                  child: TextField(
+                    showCursor: false,
+                    decoration: InputDecoration(
+                        hintText: 'Search',
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(
+                              right: 10, top: 10, bottom: 10),
+                          child: Container(
+                            height: 15,
+                            width: 15,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
                               color: mainColor,
-                          ),
-                          child: const Icon(
-                            Icons.search,
-                            color: textColor,
+                            ),
+                            child: const Icon(
+                              Icons.search,
+                              color: textColor,
+                            ),
                           ),
                         ),
-                      ),
-                      border:const OutlineInputBorder(
-                        
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
-                          
-                      )),
-                  onChanged: (value) {
-                  
-                  },
+                        )),
+                    onChanged: (value) {},
+                  ),
                 ),
-              ),
                 kheight1,
                 CarouselSlider.builder(
                   // carouselController: carouselController,
@@ -233,9 +236,43 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>const Categories()));
+                              builder: (context) => const Categories()));
                     },
-                    child: spinningContainer())
+                    child: spinningContainer()),
+                kheight,
+              const  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                     Text(
+                      'Top 3 Courses',
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16,),
+                    ),
+                    Row(
+                      children: [
+                        Text('view',style: TextStyle(color: mainColor,fontWeight: FontWeight.w600),),
+                        Icon(Icons.arrow_downward,size: 14,color: mainColor,),
+                      ],
+                    )
+                  ],
+                ),
+                kheight,
+                topCourses(),
+                kheight,
+          const  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                     Text(
+                      'Top Mentors',
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16,),
+                    ),
+                    Row(
+                      children: [
+                        Text('view',style: TextStyle(color: mainColor,fontWeight: FontWeight.w600),),
+                        Icon(Icons.arrow_downward,size: 14,color: mainColor,),
+                      ],
+                    )
+                  ],
+                ),
               ],
             ),
           ),
@@ -243,4 +280,5 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
 }

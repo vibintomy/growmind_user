@@ -7,7 +7,7 @@ class PaymentScreen extends StatefulWidget {
   final String courseId;
   final String createdBy;
 
-  PaymentScreen({required this.courseId,required this.createdBy});
+  PaymentScreen({required this.courseId, required this.createdBy});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -56,82 +56,82 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
- Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-  print('✅ Payment Success: ${response.paymentId}');
+  Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    print('✅ Payment Success: ${response.paymentId}');
 
-  User? user = _auth.currentUser;
-  if (user != null) {
-    try {
-      String userId = user.uid;
-      String courseId = widget.courseId;
-      DateTime now = DateTime.now();
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        String userId = user.uid;
+        String courseId = widget.courseId;
+        DateTime now = DateTime.now();
 
-      // ✅ Update 'purchasedCourses' in the users collection
-      await _firestore.collection('users').doc(userId).set({
-        'purchasedCourses': FieldValue.arrayUnion([courseId])
-      }, SetOptions(merge: true));
-      print("✅ Course $courseId added to user's purchasedCourses.");
+        // ✅ Update 'purchasedCourses' in the users collection
+        await _firestore.collection('users').doc(userId).set({
+          'purchasedCourses': FieldValue.arrayUnion([courseId])
+        }, SetOptions(merge: true));
+        print("✅ Course $courseId added to user's purchasedCourses.");
 
-      DocumentReference courseRef = _firestore.collection('courses').doc(courseId);
+        DocumentReference courseRef =
+            _firestore.collection('courses').doc(courseId);
 
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(courseRef);
+        await _firestore.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(courseRef);
 
-        if (!snapshot.exists) {
-          transaction.set(courseRef, {'purchasesCount': 1});
-     
-        } else {
-          Map<String, dynamic> courseData = snapshot.data() as Map<String, dynamic>;
-          if (!courseData.containsKey('purchasesCount')) {
-            transaction.update(courseRef, {'purchasesCount': 1});
-        
+          if (!snapshot.exists) {
+            transaction.set(courseRef, {'purchasesCount': 1});
           } else {
-            int currentCount = courseData['purchasesCount'] ?? 0;
-            transaction.update(courseRef, {'purchasesCount': currentCount + 1});
+            Map<String, dynamic> courseData =
+                snapshot.data() as Map<String, dynamic>;
+            if (!courseData.containsKey('purchasesCount')) {
+              transaction.update(courseRef, {'purchasesCount': 1});
+            } else {
+              int currentCount = courseData['purchasesCount'] ?? 0;
+              transaction
+                  .update(courseRef, {'purchasesCount': currentCount + 1});
+            }
+          }
+        });
+
+        DocumentReference tutorRef =
+            _firestore.collection('tutors').doc(widget.createdBy);
+
+        await _firestore.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(tutorRef);
+
+          if (!snapshot.exists) {
+            transaction.set(tutorRef, {
+              'totalusers': 1,
+              'joiners': [userId],
+              'joinDateTime': {userId: now.toIso8601String()}
+            });
+          } else {
+            Map<String, dynamic> tutorData =
+                snapshot.data() as Map<String, dynamic>;
+            List<dynamic> joiners = tutorData['joiners'] ?? [];
+            Map<String, dynamic> joinDateTime = tutorData['joinDateTime'] ?? {};
+            int totaluser = (tutorData['totalusers'] ?? 0) as int;
+            joiners.add(userId);
+            joinDateTime[userId] = now.toIso8601String();
+           
+            transaction.update(tutorRef, {
+              'joiners': joiners,
+              'joinDateTime': joinDateTime,
+              'totalusers': totaluser+1
+            });
+
           
           }
-        }
-      });
-
-   
-      DocumentReference tutorRef = _firestore.collection('tutors').doc(widget.createdBy);
-
-  
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(tutorRef);
-
-        if (!snapshot.exists) {
-          transaction.set(tutorRef, {
-            'joiners': [userId],
-            'joinDateTime': {userId: now.toIso8601String()}
-          });
-      
-        } else {
-          Map<String, dynamic> tutorData = snapshot.data() as Map<String, dynamic>;
-          List<dynamic> joiners = tutorData['joiners'] ?? [];
-          Map<String, dynamic> joinDateTime = tutorData['joinDateTime'] ?? {};
-
-          joiners.add(userId);
-          joinDateTime[userId] = now.toIso8601String();
-
-          transaction.update(tutorRef, {
-            'joiners': joiners,
-            'joinDateTime': joinDateTime,
-          });
-
-          throw Exception("✅ Updated tutor record: User $userId joined course $courseId at $now");
-        }
-      });
-
-    } catch (e) {
-      throw Exception("❌ Firestore Error: $e");
+        });
+      } catch (e) {
+        throw Exception("❌ Firestore Error: $e");
+      }
+    } else {
+      throw Exception("❌ No authenticated user found.");
     }
-  } else {
-    throw Exception("❌ No authenticated user found.");
-  }
 
-  Navigator.pop(context, false);
-}
+    Navigator.pop(context, false);
+  }
 
   void _handlePaymentError(PaymentFailureResponse response) {
     print('Payment Error: ${response.code} - ${response.message}');

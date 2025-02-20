@@ -30,7 +30,9 @@ class TopCoursesRepoImpl implements TopCoursesRepo {
               videoUrl: sectionDoc['videoUrl'],
               sectionName: sectionDoc['sectionName'],
               sectionDescription: sectionDoc['sectionDescription'],
-              createdAt: sectionDoc['createdAt']);
+              createdAt: (sectionDoc['createdAt'] is Timestamp)
+                ? (sectionDoc['createdAt'] as Timestamp).toDate().toString()
+                : 'Unknown Date');
         }).toList();
         courses.add(CourseEntity(
             id: doc.id,
@@ -41,12 +43,14 @@ class TopCoursesRepoImpl implements TopCoursesRepo {
             imageUrl: doc['imageUrl'],
             subCategory: doc['subCategory'],
             createdBy: doc['createdBy'],
-            createdAt: (doc['createdAt'] as Timestamp).toDate().toString(),
+            createdAt: (doc['createdAt'] is Timestamp)
+                ? (doc['createdAt'] as Timestamp).toDate().toString()
+                : 'Unknown Date',
             sections: sections));
       }
       return courses;
     } catch (e) {
-      print('Error fetching top courses $StackTrace');
+      print("Error fetching top courses: $e \nStackTrace: $StackTrace");
       throw Exception('Error in while fetching data from the courses');
     }
   }
