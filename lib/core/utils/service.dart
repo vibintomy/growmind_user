@@ -8,22 +8,26 @@ import 'package:growmind/features/home/data/repo/categories_repo_impl.dart';
 import 'package:growmind/features/home/data/repo/fetch_course_repo_impl.dart';
 import 'package:growmind/features/home/data/repo/purchased_course_repo_impl.dart';
 import 'package:growmind/features/home/data/repo/top_courses_repoo_impl.dart';
+import 'package:growmind/features/home/data/repo/top_tutors_repo_impl.dart';
 import 'package:growmind/features/home/data/repo/tutor_repo_impl.dart';
 import 'package:growmind/features/home/domain/repositories/category_repository.dart';
 import 'package:growmind/features/home/domain/repositories/fetch_course_repo.dart';
 import 'package:growmind/features/home/domain/repositories/purchased_course_repository.dart';
 import 'package:growmind/features/home/domain/repositories/top_courses_repo.dart';
+import 'package:growmind/features/home/domain/repositories/top_tutors_repo.dart';
 import 'package:growmind/features/home/domain/repositories/tutor_repository.dart';
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/get_tutor_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/purchase_course_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/top_course_usecases.dart';
+import 'package:growmind/features/home/domain/usecases/top_tutors_usecases.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_categories_bloc/fetch_categories_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchased_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/top_tutors_bloc/top_tutors_bloc.dart';
 import 'package:growmind/features/profile/data/datasource/profile_remote_datasource.dart';
 import 'package:growmind/features/profile/data/repo/profile_repo.dart';
 import 'package:growmind/features/profile/data/repo/update_profile_repoimpl.dart';
@@ -66,6 +70,8 @@ void setUp() {
       () => PurchasedCourseRepoImpl(getIt<PurchasedCourseDatasource>()));
   getIt.registerLazySingleton<TopCoursesRepo>(
       () => TopCoursesRepoImpl(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<TopTutorsRepo>(
+      () => TopTutorsRepoImpl(getIt<FirebaseFirestore>()));
 
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
@@ -80,6 +86,7 @@ void setUp() {
   getIt.registerLazySingleton(
       () => PurchaseCourseUsecases(getIt<PurchasedCourseRepository>()));
   getIt.registerLazySingleton(() => TopCourseUsecases(getIt<TopCoursesRepo>()));
+  getIt.registerLazySingleton(() => TopTutorsUsecases(getIt<TopTutorsRepo>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -95,4 +102,5 @@ void setUp() {
   getIt.registerFactory(() => PurchasedBloc(getIt<PurchaseCourseUsecases>()));
 
   getIt.registerFactory(() => TopCoursesBloc(getIt<TopCourseUsecases>()));
+  getIt.registerFactory(() => TopTutorsBloc(getIt<TopTutorsUsecases>()));
 }

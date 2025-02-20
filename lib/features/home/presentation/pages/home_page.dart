@@ -13,6 +13,7 @@ import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.da
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
 import 'package:growmind/features/home/presentation/widgets/spinning_container.dart';
 import 'package:growmind/features/home/presentation/widgets/top_courses.dart';
+import 'package:growmind/features/home/presentation/widgets/top_mentors.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
@@ -273,6 +274,7 @@ class HomePage extends StatelessWidget {
                     )
                   ],
                 ),
+                TopMentors()
               ],
             ),
           ),
