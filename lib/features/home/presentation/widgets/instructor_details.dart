@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_event.dart';
 import 'package:growmind/features/home/presentation/bloc/get_tutor_bloc/tutor_state.dart';
 
-Container instructorDetails(BuildContext context, String subCategory,String tutorId) {
+Container instructorDetails(
+    BuildContext context, String subCategory, String tutorId) {
   context.read<TutorBloc>().add(GetTutorEvent(tutorId));
   return Container(
     height: 400,
@@ -40,13 +42,28 @@ Container instructorDetails(BuildContext context, String subCategory,String tuto
               final tutor = state.tutorId;
               return ListTile(
                 leading: Container(
-                  decoration:const BoxDecoration(shape: BoxShape.circle),
-               
-                    height: 70, width: 60, child: ClipOval(child: Image.network(tutor.image,fit: BoxFit.fill,))),
-                title: Text(tutor.name,style:const TextStyle(fontWeight: FontWeight.bold),),
-                subtitle: Text(tutor.email,overflow: TextOverflow.ellipsis,),
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    height: 70,
+                    width: 60,
+                    child: ClipOval(
+                        child: Image.network(
+                      tutor.image,
+                      fit: BoxFit.fill,
+                    ))),
+                title: Text(
+                  tutor.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  tutor.email,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: IconButton(
-                    onPressed: () {}, icon:const Icon(Icons.wechat_sharp)),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const BottomNavigation(initialIndex: 1,)));
+                    },
+                    icon: const Icon(Icons.wechat_sharp)),
               );
             } else {
               return const Center(

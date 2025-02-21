@@ -68,6 +68,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         // ✅ Update 'purchasedCourses' in the users collection
         await _firestore.collection('users').doc(userId).set({
+          'mentor':FieldValue.arrayUnion([widget.createdBy]),
           'purchasedCourses': FieldValue.arrayUnion([courseId])
         }, SetOptions(merge: true));
         print("✅ Course $courseId added to user's purchasedCourses.");

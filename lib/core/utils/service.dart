@@ -1,6 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:growmind/core/utils/cloudinary.dart';
+import 'package:growmind/features/chat/data/datasource/chat_mentor_datasource_impl.dart';
+import 'package:growmind/features/chat/data/datasource/chat_remot_datasource_impl.dart';
+import 'package:growmind/features/chat/data/datasource/chat_remote_datasource.dart';
+import 'package:growmind/features/chat/data/repository/chat_mentor_repo_impl.dart';
+import 'package:growmind/features/chat/data/repository/chat_repo_impl.dart';
+import 'package:growmind/features/chat/domain/repositories/chat_mentor_repositories.dart';
+import 'package:growmind/features/chat/domain/repositories/chat_repositories.dart';
+import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dart';
+import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import 'package:growmind/features/home/data/datasource/categories_remote_datasource.dart';
 import 'package:growmind/features/home/data/datasource/purchased_course_datasource.dart';
 import 'package:growmind/features/home/data/datasource/tutor_remote_datasource.dart';
@@ -73,6 +84,20 @@ void setUp() {
   getIt.registerLazySingleton<TopTutorsRepo>(
       () => TopTutorsRepoImpl(getIt<FirebaseFirestore>()));
 
+  getIt.registerLazySingleton<ChatRemoteDatasource>(
+      () => ChatRemotDatasourceimpl(getIt<FirebaseFirestore>()));
+
+  getIt.registerLazySingleton<ChatRemotDatasourceimpl>(
+      () => ChatRemotDatasourceimpl(getIt<FirebaseFirestore>()));
+
+  getIt.registerLazySingleton<ChatRepositories>(
+      () => ChatRepoImpl(getIt<ChatRemotDatasourceimpl>()));
+
+  getIt.registerLazySingleton<ChatMentorDatasourceImpl>(
+      () => ChatMentorDatasourceImpl(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<ChatMentorRepositories>(
+      () => ChatMentorRepoImpl(getIt<ChatMentorDatasourceImpl>()));
+
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
   getIt.registerLazySingleton(
@@ -87,6 +112,9 @@ void setUp() {
       () => PurchaseCourseUsecases(getIt<PurchasedCourseRepository>()));
   getIt.registerLazySingleton(() => TopCourseUsecases(getIt<TopCoursesRepo>()));
   getIt.registerLazySingleton(() => TopTutorsUsecases(getIt<TopTutorsRepo>()));
+  getIt.registerLazySingleton(() => ChatUsecases(getIt<ChatRepositories>()));
+  getIt
+      .registerLazySingleton(() => ChatMentorsUsecases(getIt<ChatMentorRepositories>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -103,4 +131,7 @@ void setUp() {
 
   getIt.registerFactory(() => TopCoursesBloc(getIt<TopCourseUsecases>()));
   getIt.registerFactory(() => TopTutorsBloc(getIt<TopTutorsUsecases>()));
+
+  getIt.registerFactory(() => ChatBloc(getIt<ChatUsecases>()));
+  getIt.registerFactory(() => MentorBloc(getIt<ChatMentorsUsecases>()));
 }

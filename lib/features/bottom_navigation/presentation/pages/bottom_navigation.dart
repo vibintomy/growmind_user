@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:flutter/rendering.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/chat/presentation/pages/chat_page.dart';
 import 'package:growmind/features/favourites/presentation/favourite_pages.dart';
 import 'package:growmind/features/home/presentation/pages/home_page.dart';
 import 'package:growmind/features/profile/presentation/pages/profile_page.dart';
 
-// ignore: must_be_immutable
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
+  final int initialIndex;
+  const BottomNavigation({super.key, this.initialIndex = 0,}); // Default: HomePage
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  int currentIndex = 0;
+  late int currentIndex;
   final ValueNotifier<bool> bottomNavBarVisible = ValueNotifier(true);
 
   final List<Widget> listOfPages = [
-     HomePage(),
-    const ChatPage(),
-    const FavouritePages(),
-    const ProfilePage()
+    HomePage(),
+    ChatPage(),
+    FavouritePages(),
+    ProfilePage(),
   ];
-  List<IconData> listOfIcons = [
-    Icons.home_rounded,
-    Icons.chat,
-    Icons.favorite_outline,
-    Icons.person
-  ];
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialIndex;
+  }
 
   void setPage(int index) {
     setState(() {
@@ -44,17 +44,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
       extendBody: true,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
-         
-           if (notification.direction == ScrollDirection.reverse) {
-                     
-               bottomNavBarVisible.value = true;
-           
+          if (notification.direction == ScrollDirection.reverse) {
+            bottomNavBarVisible.value = true;
           } else if (notification.direction == ScrollDirection.forward) {
-                               
-               bottomNavBarVisible.value = true; 
-         
+            bottomNavBarVisible.value = true;
           }
-                  
           return true;
         },
         child: IndexedStack(
@@ -62,71 +56,62 @@ class _BottomNavigationState extends State<BottomNavigation> {
           children: listOfPages,
         ),
       ),
-      bottomNavigationBar: ValueListenableBuilder(
+      bottomNavigationBar: ValueListenableBuilder<bool>(
         valueListenable: bottomNavBarVisible,
         builder: (context, isVisible, child) {
           return AnimatedContainer(
-            
             duration: const Duration(milliseconds: 300),
             height: isVisible ? kBottomNavigationBarHeight + 15 : 0,
             child: isVisible ? child : const SizedBox.shrink(),
           );
         },
-        
-        child: Padding( 
-          padding: const EdgeInsets.all( 1.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Container(
             height: 50,
             decoration: BoxDecoration(
               boxShadow: const [
                 BoxShadow(
                   color: Colors.grey,
-                  offset: Offset(0, 0),
+                  offset: Offset(0, 2),
                   spreadRadius: 2,
                   blurRadius: 5,
-                )
+                ),
               ],
               color: textColor,
               borderRadius: BorderRadius.circular(35),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(3.0),
+              padding: const EdgeInsets.all(5.0),
               child: GNav(
-                  haptic: true,
-                  color: Colors.black,
-                  activeColor: textColor,
-                  gap: 1,
-                  onTabChange: (index) {
-                    setState(() {
-                      currentIndex = index;
-                    });
-                  },
-                  textStyle: const TextStyle(color: Colors.white
-                  ,
+                haptic: true,
+                color: Colors.black, // Inactive icon color
+                activeColor: Colors.white, // Active icon color
+                gap: 8,
+                onTabChange: setPage, // Updates current index
+                textStyle: const TextStyle(color: Colors.white),
+                tabBackgroundColor: mainColor,
+                selectedIndex: currentIndex,
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                tabs: const [
+                  GButton(
+                    icon: Icons.home,
+                    text: 'Home',
                   ),
-                  
-                  tabBackgroundColor: mainColor,
-                  selectedIndex: currentIndex,
-                  tabs:const  [
-                    GButton(
-                      icon: Icons.home,
-                      text: 'Home',
-                    ),
-                    GButton(
-                      icon: Icons.chat,
-                      text: 'Chat',
-                    ),
-                    GButton(
-                      icon: Icons.favorite,
-                      text: 'Favourite',
-                      iconSize: 30,
-                    ),
-                    GButton(
-                     
-                      icon: Icons.person,
-                      text: 'profile',
-                    )
-                  ]),
+                  GButton(
+                    icon: Icons.chat,
+                    text: 'Chat',
+                  ),
+                  GButton(
+                    icon: Icons.favorite,
+                    text: 'Favourite',
+                  ),
+                  GButton(
+                    icon: Icons.person,
+                    text: 'Profile',
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -11,6 +11,10 @@ import 'package:growmind/features/auth/presentation/bloc/signup_bloc/bloc/signup
 import 'package:growmind/features/auth/presentation/pages/login_page.dart';
 import 'package:growmind/features/auth/presentation/pages/splash_screen.dart';
 import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
+import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dart';
+import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import 'package:growmind/features/home/domain/usecases/category_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/fetch_course_usecases.dart';
 import 'package:growmind/features/home/domain/usecases/get_tutor_usecases.dart';
@@ -66,7 +70,9 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=> CurriculumBloc()),
                                   BlocProvider(create: (context)=> PurchasedBloc(getIt<PurchaseCourseUsecases>())),
                                   BlocProvider(create: (context)=> TopCoursesBloc(getIt<TopCourseUsecases>())),
-                                  BlocProvider(create: (context)=> TopTutorsBloc(getIt<TopTutorsUsecases>()))
+                                  BlocProvider(create: (context)=> TopTutorsBloc(getIt<TopTutorsUsecases>())),
+                                  BlocProvider(create: (context)=> ChatBloc(getIt<ChatUsecases>()),),
+                                  BlocProvider(create: (context)=> MentorBloc(getIt<ChatMentorsUsecases>()))
             ],
             child: MaterialApp(
               theme: ThemeData(
