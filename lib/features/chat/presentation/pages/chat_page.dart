@@ -28,46 +28,47 @@ class ChatPage extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 25),
               ),
               kheight1,
-                Container(
-              height: 50,
-              width: 350,
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                  color: textColor,
-                  boxShadow: [
-                    BoxShadow(
-                        offset: Offset(0, 3),
-                        spreadRadius: 0,
-                        blurRadius: 3,
-                        color: greyColor)
-                  ]),
-              child: TextField(
-                decoration: InputDecoration(
-                    hintText: 'Search',
-                    suffixIcon: Padding(
-                      padding:
-                          const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                      child: Container(
-                        height: 10,
-                        width: 10,
-                        decoration: const BoxDecoration(
-                            color: mainColor,
-                            borderRadius: BorderRadius.all(Radius.circular(5))),
-                        child: const Icon(
-                          Icons.search,
-                          color: textColor,
+              Container(
+                height: 50,
+                width: 350,
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                    color: textColor,
+                    boxShadow: [
+                      BoxShadow(
+                          offset: Offset(0, 3),
+                          spreadRadius: 0,
+                          blurRadius: 3,
+                          color: greyColor)
+                    ]),
+                child: TextField(
+                  decoration: InputDecoration(
+                      hintText: 'Search',
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(
+                            right: 10, top: 10, bottom: 10),
+                        child: Container(
+                          height: 10,
+                          width: 10,
+                          decoration: const BoxDecoration(
+                              color: mainColor,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                          child: const Icon(
+                            Icons.search,
+                            color: textColor,
+                          ),
                         ),
                       ),
-                    ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
-                onChanged: (value) {
-                
-                     
-                },
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(30))),
+                  onChanged: (value) {
+                    context.read<MentorBloc>().add(SearchMentor(value));
+                  },
+                ),
               ),
-            ),
+              kheight1,
               Expanded(
                 child: BlocBuilder<MentorBloc, MentorState>(
                     builder: (context, state) {
@@ -78,11 +79,13 @@ class ChatPage extends StatelessWidget {
                   }
                   if (state is MentorLoaded) {
                     final tutors = state.tutors;
-                    return ListView.builder(
+                    return tutors.isEmpty?
+                   const Center(child: Text('No Chat Found'),)
+                    : ListView.builder(
                         itemCount: tutors.length,
                         itemBuilder: (context, index) {
                           final tutor = tutors[index];
-          
+
                           return Column(
                             children: [
                               GestureDetector(
@@ -92,7 +95,8 @@ class ChatPage extends StatelessWidget {
                                       MaterialPageRoute(
                                           builder: (context) => MessagePage(
                                               imageUrl: tutor.image,
-                                              name: tutor.name)));
+                                              name: tutor.name,
+                                              receiverId: tutors[index].uid,)));
                                 },
                                 child: ListTile(
                                   leading: Container(
@@ -114,7 +118,7 @@ class ChatPage extends StatelessWidget {
                                   ),
                                   subtitle: const Text(
                                     'Tap to Send messages',
-                                    style: const TextStyle(
+                                    style:  TextStyle(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 12),
                                   ),

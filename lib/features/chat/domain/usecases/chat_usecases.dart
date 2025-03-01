@@ -5,8 +5,8 @@ class ChatUsecases {
   final ChatRepositories chatRepositories;
   ChatUsecases(this.chatRepositories);
 
-  Stream<List<Message>> callReceiver(String receiverId) {
-    return chatRepositories.getMessage(receiverId);
+  Stream<List<Message>> callReceiver(String receiverId,String senderId) {
+    return chatRepositories.getMessage(receiverId,senderId);
   }
 
   Future<void> callSender(Message message) {

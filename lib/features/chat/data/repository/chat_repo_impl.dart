@@ -1,19 +1,24 @@
-import 'package:growmind/features/chat/data/datasource/chat_remot_datasource_impl.dart';
+import 'package:growmind/features/chat/data/datasource/chat_remote_datasource.dart';
 import 'package:growmind/features/chat/data/model/message_model.dart';
 import 'package:growmind/features/chat/domain/entities/chat_entites.dart';
 import 'package:growmind/features/chat/domain/repositories/chat_repositories.dart';
 
 class ChatRepoImpl implements ChatRepositories {
-  final ChatRemotDatasourceimpl remotDatasourceimpl;
-  ChatRepoImpl(this.remotDatasourceimpl);
+  final ChatRemoteDatasource chatRemoteDatasource;
+  ChatRepoImpl(this.chatRemoteDatasource);
 
   @override
-  Stream<List<Message>> getMessage(String receiverId) {
-    return remotDatasourceimpl.getMessages(receiverId);
+  Stream<List<Message>> getMessage(String receiverId, String senderId) {
+    return chatRemoteDatasource.getMessages(receiverId, senderId);
   }
 
   @override
-  Future<void> sendMessage(Message message) {
-    return remotDatasourceimpl.sendMessage(message as MessageModel);
+  Future<void> sendMessage(Message message) async {
+    final messageModel = MessageModel(
+        senderId: message.senderId,
+        receiverId: message.receiverId,
+        message: message.message,
+        timeStamp: message.timeStamp);
+    await chatRemoteDatasource.sendMessage(messageModel);
   }
 }

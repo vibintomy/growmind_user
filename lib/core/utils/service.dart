@@ -12,6 +12,14 @@ import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dar
 import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
+import 'package:growmind/features/favourites/data/datasource/favourite_remote_datasource.dart';
+import 'package:growmind/features/favourites/data/datasource/favourite_remote_datasource_impl.dart';
+import 'package:growmind/features/favourites/data/favorite_repository_impl/favorite_repo_impl.dart';
+import 'package:growmind/features/favourites/domain/repositories/favourite_repository.dart';
+import 'package:growmind/features/favourites/domain/usecases/get_favourite_course.dart';
+import 'package:growmind/features/favourites/domain/usecases/is_favourite.dart';
+import 'package:growmind/features/favourites/domain/usecases/toggle_favourite.dart';
+import 'package:growmind/features/favourites/presentation/bloc/favorite_bloc.dart';
 import 'package:growmind/features/home/data/datasource/categories_remote_datasource.dart';
 import 'package:growmind/features/home/data/datasource/purchased_course_datasource.dart';
 import 'package:growmind/features/home/data/datasource/tutor_remote_datasource.dart';
@@ -87,16 +95,17 @@ void setUp() {
   getIt.registerLazySingleton<ChatRemoteDatasource>(
       () => ChatRemotDatasourceimpl(getIt<FirebaseFirestore>()));
 
-  getIt.registerLazySingleton<ChatRemotDatasourceimpl>(
-      () => ChatRemotDatasourceimpl(getIt<FirebaseFirestore>()));
-
   getIt.registerLazySingleton<ChatRepositories>(
-      () => ChatRepoImpl(getIt<ChatRemotDatasourceimpl>()));
+      () => ChatRepoImpl(getIt<ChatRemoteDatasource>()));
 
   getIt.registerLazySingleton<ChatMentorDatasourceImpl>(
       () => ChatMentorDatasourceImpl(getIt<FirebaseFirestore>()));
   getIt.registerLazySingleton<ChatMentorRepositories>(
       () => ChatMentorRepoImpl(getIt<ChatMentorDatasourceImpl>()));
+  getIt.registerLazySingleton<FavouriteRemoteDatasource>(
+      () => FavouriteRemoteDatasourceImpl(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<FavouriteRepository>(
+      () => FavoriteRepoImpl(getIt<FavouriteRemoteDatasource>()));
 
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
@@ -113,8 +122,11 @@ void setUp() {
   getIt.registerLazySingleton(() => TopCourseUsecases(getIt<TopCoursesRepo>()));
   getIt.registerLazySingleton(() => TopTutorsUsecases(getIt<TopTutorsRepo>()));
   getIt.registerLazySingleton(() => ChatUsecases(getIt<ChatRepositories>()));
-  getIt
-      .registerLazySingleton(() => ChatMentorsUsecases(getIt<ChatMentorRepositories>()));
+  getIt.registerLazySingleton(
+      () => ChatMentorsUsecases(getIt<ChatMentorRepositories>()));
+  getIt.registerLazySingleton(() => GetFavouriteCourse(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(() => IsFavourite(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(() => ToggleFavourite(getIt<FavouriteRepository>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -134,4 +146,8 @@ void setUp() {
 
   getIt.registerFactory(() => ChatBloc(getIt<ChatUsecases>()));
   getIt.registerFactory(() => MentorBloc(getIt<ChatMentorsUsecases>()));
+  getIt.registerFactory(() => FavoriteBloc(
+      getFavouriteCourse: getIt<GetFavouriteCourse>(),
+      isFavourite: getIt<IsFavourite>(),
+      toggleFavourite: getIt<ToggleFavourite>()));
 }

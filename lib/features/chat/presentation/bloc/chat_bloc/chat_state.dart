@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:growmind/features/chat/domain/entities/chat_entites.dart';
 
 abstract class ChatState extends Equatable {
+  ChatState();
   @override
   List<Object?> get props => [];
 }

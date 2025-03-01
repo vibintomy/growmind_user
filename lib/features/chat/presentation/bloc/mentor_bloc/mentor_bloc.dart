@@ -19,6 +19,10 @@ class MentorBloc extends Bloc<MentorEvent, MentorState> {
       }
     });
 
-    on<SearchMentor>((event, emit) {});
+    on<SearchMentor>((event, emit) {
+      final filteredTutors = newList.where(
+          (ele) => ele.name.toLowerCase().contains(event.query.toLowerCase())).toList();
+      emit(MentorLoaded(filteredTutors));
+    });
   }
 }

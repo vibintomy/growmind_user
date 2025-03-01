@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/rendering.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/chat/presentation/pages/chat_page.dart';
-import 'package:growmind/features/favourites/presentation/favourite_pages.dart';
+import 'package:growmind/features/favourites/presentation/pages/favourite_pages.dart';
 import 'package:growmind/features/home/presentation/pages/home_page.dart';
 import 'package:growmind/features/profile/presentation/pages/profile_page.dart';
 
@@ -22,7 +22,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   final List<Widget> listOfPages = [
     HomePage(),
     ChatPage(),
-    FavouritePages(),
+    FavoritesPage(),
     ProfilePage(),
   ];
 

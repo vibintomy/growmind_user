@@ -135,96 +135,99 @@ class Courses extends StatelessWidget {
                             final course = courses[index];
                             return SizedBox(
                               height: 180,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              DisplayCourse(
-                                                id:course.id,
-                                                category: course.category,
-                                                courseName: course.courseName,
-                                                courseDescription: course.courseDescription,
-                                                coursePrice: course.coursePrice,
-                                                createdAt: course.createdAt,
-                                                createdBy: course.createdBy,
-                                                imageUrl: course.imageUrl,
-                                                sections: course.sections,
-                                                subCategory: course.subCategory,
-                                              )));
-                                },
-                                child: Card(
-                                    color: textColor,
-                                    shadowColor: greyColor,
-                                    elevation: 5,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            width: 150,
-                                            height: 160,
-                                            decoration: const BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      offset: Offset(0, 3),
-                                                      spreadRadius: 0,
-                                                      blurRadius: 3,
-                                                      color: greyColor)
-                                                ],
-                                                shape: BoxShape.rectangle,
-                                                color: greyColor,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(1))),
+                              child: Card(
+                                  color: textColor,
+                                  shadowColor: greyColor,
+                                  elevation: 5,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          width: 150,
+                                          height: 160,
+                                          decoration: const BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    offset: Offset(0, 3),
+                                                    spreadRadius: 0,
+                                                    blurRadius: 3,
+                                                    color: greyColor)
+                                              ],
+                                              shape: BoxShape.rectangle,
+                                              color: greyColor,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(1))),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                               Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DisplayCourse(
+                                              id:course.id,
+                                              category: course.category,
+                                              courseName: course.courseName,
+                                              courseDescription: course.courseDescription,
+                                              coursePrice: course.coursePrice,
+                                              createdAt: course.createdAt,
+                                              createdBy: course.createdBy,
+                                              imageUrl: course.imageUrl,
+                                              sections: course.sections,
+                                              subCategory: course.subCategory,
+                                            )));
+                                            },
                                             child: Image.network(
                                               course.imageUrl,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
                                         ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              children: [
-                                                kheight2,
-                                                kwidth1,
-                                                Text(
-                                                  course.subCategory,
-                                                  style: const TextStyle(
-                                                      color: mainColor,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                kheight1,
-                                                Text(
-                                                  course.courseName,
-                                                  style: const TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                Text(
-                                                  'Price - ${course.coursePrice}-/',
-                                                  style: const TextStyle(
-                                                      color: mainColor,
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ],
-                                            ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                         const  Align(
+                                            alignment: Alignment.centerRight,
+                                            child:    Icon(Icons.favorite_outline)),
+                                             
+                                              kwidth1,
+                                              Text(
+                                                course.subCategory,
+                                                style: const TextStyle(
+                                                    color: mainColor,
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              kheight1,
+                                              Text(
+                                                course.courseName,
+                                                style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                overflow:
+                                                    TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                'Price - ${course.coursePrice}-/',
+                                                style: const TextStyle(
+                                                    color: mainColor,
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
                                           ),
-                                        )
-                                      ],
-                                    )),
-                              ),
+                                        ),
+                                      )
+                                    ],
+                                  )),
                             );
                           }),
                 );
