@@ -8,4 +8,8 @@ class FetchCourseUsecases {
   Future<List<CourseEntity>> call(String categoryId) async {
     return courseRepo.fetchCourse(categoryId);
   }
+
+  Future<List<CourseEntity>> fetchAllCourse() async {
+    return courseRepo.fetchAllCourse();
+  }
 }

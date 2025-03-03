@@ -3,7 +3,7 @@ import 'package:growmind/features/favourites/domain/repositories/favourite_repos
 class ToggleFavourite {
   final FavouriteRepository favouriteRepository;
   ToggleFavourite(this.favouriteRepository);
-  Future<void> callToggle(String userId, String courseId) {
+  Future<void> call(String userId, String courseId) {
     return favouriteRepository.toggleFavourite(userId, courseId);
   }
 }

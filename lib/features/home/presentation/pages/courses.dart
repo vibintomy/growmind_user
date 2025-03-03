@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/favourites/presentation/pages/favoriteIcon.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_event.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_state.dart';
@@ -191,9 +192,9 @@ class Courses extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Column(
                                             children: [
-                                         const  Align(
+                                           Align(
                                             alignment: Alignment.centerRight,
-                                            child:    Icon(Icons.favorite_outline)),
+                                            child:   FavoriteIcon(courseId:course.id, )),
                                              
                                               kwidth1,
                                               Text(

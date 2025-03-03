@@ -1,58 +1,100 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:growmind/features/favourites/domain/usecases/fetch_favorite_course_usecase.dart';
 import 'package:growmind/features/favourites/domain/usecases/get_favourite_course.dart';
 import 'package:growmind/features/favourites/domain/usecases/is_favourite.dart';
 import 'package:growmind/features/favourites/domain/usecases/toggle_favourite.dart';
 import 'package:growmind/features/favourites/presentation/bloc/favorite_event.dart';
 import 'package:growmind/features/favourites/presentation/bloc/favorite_state.dart';
+import 'package:growmind/features/home/domain/entities/course_entity.dart';
 
 class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   final GetFavouriteCourse getFavouriteCourse;
   final IsFavourite isFavourite;
   final ToggleFavourite toggleFavourite;
-  List<String> favoriteCourseIds = [];
-  FavoriteBloc(
-      {required this.getFavouriteCourse,
-      required this.isFavourite,
-      required this.toggleFavourite})
-      : super(FavoriteStateInitial()) {
-    on<LoadFavoriteEvent>(onLoadFavorites);
-    on<ToggleFavoriteEvent>(onToggleState);
-    on<CheckFavoriteEvent>(checkIsFavorite);
+  final FetchFavoriteCourseUsecase fetchFavoriteCourseUsecase;
+
+  List<CourseEntity> filteredCourse = [];
+  List<CourseEntity> favoriteCourses = [];
+
+  FavoriteBloc({
+    required this.getFavouriteCourse,
+    required this.fetchFavoriteCourseUsecase,
+    required this.isFavourite,
+    required this.toggleFavourite,
+  }) : super(FavoriteStateInitial()) {
+    on<LoadFavoriteEvent>(_onLoadFavorites);
+    on<ToggleFavoriteEvent>(_onToggleFavorite);
+    on<CheckFavoriteEvent>(_onCheckFavorite);
+    on<SearchCourseEvent>(onSearchEvent);
   }
 
-  Future<void> onLoadFavorites(
+  Future<void> _onLoadFavorites(
       LoadFavoriteEvent event, Emitter<FavoriteState> emit) async {
     emit(FavoriteStateLoading());
+
     try {
-      favoriteCourseIds = await getFavouriteCourse(event.userId);
-      emit(FavoriteStateLoaded(favoriteCourseIds));
+      final List<String> favoriteCourseIds =
+          await getFavouriteCourse(event.userId);
+
+      if (favoriteCourseIds.isEmpty) {
+        emit(FavoriteStateLoaded(favoriteCourses: []));
+        return;
+      }
+
+      final List<CourseEntity> fetchedCourses = [];
+      for (String courseId in favoriteCourseIds) {
+        final List<CourseEntity> courses =
+            await fetchFavoriteCourseUsecase.fetchCourse(courseId);
+        fetchedCourses.addAll(courses);
+      }
+
+      favoriteCourses = fetchedCourses;
+      emit(FavoriteStateLoaded(favoriteCourses: favoriteCourses));
     } catch (e) {
       emit(FavoriteError(e.toString()));
     }
   }
 
-  Future<void> onToggleState(
+  Future<void> _onToggleFavorite(
       ToggleFavoriteEvent event, Emitter<FavoriteState> emit) async {
     try {
       await toggleFavourite(event.userId, event.courseId);
-      if (favoriteCourseIds.contains(event.courseId)) {
-        favoriteCourseIds.remove(event.courseId);
+
+      final isNowFavorite = await isFavourite(event.userId, event.courseId);
+
+      emit(
+          IsFavoriteState(isfavorite: isNowFavorite, courseId: event.courseId));
+
+      if (isNowFavorite) {
+        final List<CourseEntity> newFavorite =
+            await fetchFavoriteCourseUsecase.fetchCourse(event.courseId);
+        favoriteCourses.addAll(newFavorite);
       } else {
-        favoriteCourseIds.add(event.courseId);
+        favoriteCourses.removeWhere((course) => course.id == event.courseId);
       }
-      emit(FavoriteStateLoaded(favoriteCourseIds));
+
+      emit(FavoriteStateLoaded(favoriteCourses: favoriteCourses));
     } catch (e) {
       emit(FavoriteError(e.toString()));
     }
   }
 
-  Future<void> checkIsFavorite(
+  Future<void> _onCheckFavorite(
       CheckFavoriteEvent event, Emitter<FavoriteState> emit) async {
     try {
       final isFavorite = await isFavourite(event.userId, event.courseId);
-      emit(IsFavoriteState(isFavorite, event.courseId));
+      emit(IsFavoriteState(isfavorite: isFavorite, courseId: event.courseId));
     } catch (e) {
       emit(FavoriteError(e.toString()));
     }
+  }
+
+  Future<void> onSearchEvent(
+      SearchCourseEvent event, Emitter<FavoriteState> emit) async {
+    final query = event.query.toLowerCase();
+    filteredCourse = favoriteCourses
+        .where((course) => course.courseName.toLowerCase().contains(query))
+        .toList();
+    emit(FavoriteStateLoaded(favoriteCourses: filteredCourse));
   }
 }

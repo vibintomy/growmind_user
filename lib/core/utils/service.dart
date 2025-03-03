@@ -16,6 +16,7 @@ import 'package:growmind/features/favourites/data/datasource/favourite_remote_da
 import 'package:growmind/features/favourites/data/datasource/favourite_remote_datasource_impl.dart';
 import 'package:growmind/features/favourites/data/favorite_repository_impl/favorite_repo_impl.dart';
 import 'package:growmind/features/favourites/domain/repositories/favourite_repository.dart';
+import 'package:growmind/features/favourites/domain/usecases/fetch_favorite_course_usecase.dart';
 import 'package:growmind/features/favourites/domain/usecases/get_favourite_course.dart';
 import 'package:growmind/features/favourites/domain/usecases/is_favourite.dart';
 import 'package:growmind/features/favourites/domain/usecases/toggle_favourite.dart';
@@ -124,9 +125,13 @@ void setUp() {
   getIt.registerLazySingleton(() => ChatUsecases(getIt<ChatRepositories>()));
   getIt.registerLazySingleton(
       () => ChatMentorsUsecases(getIt<ChatMentorRepositories>()));
-  getIt.registerLazySingleton(() => GetFavouriteCourse(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(
+      () => GetFavouriteCourse(getIt<FavouriteRepository>()));
   getIt.registerLazySingleton(() => IsFavourite(getIt<FavouriteRepository>()));
-  getIt.registerLazySingleton(() => ToggleFavourite(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(
+      () => ToggleFavourite(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(
+      () => FetchFavoriteCourseUsecase(getIt<FavouriteRepository>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -147,6 +152,7 @@ void setUp() {
   getIt.registerFactory(() => ChatBloc(getIt<ChatUsecases>()));
   getIt.registerFactory(() => MentorBloc(getIt<ChatMentorsUsecases>()));
   getIt.registerFactory(() => FavoriteBloc(
+      fetchFavoriteCourseUsecase: getIt<FetchFavoriteCourseUsecase>(),
       getFavouriteCourse: getIt<GetFavouriteCourse>(),
       isFavourite: getIt<IsFavourite>(),
       toggleFavourite: getIt<ToggleFavourite>()));

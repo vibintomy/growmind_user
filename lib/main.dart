@@ -15,6 +15,7 @@ import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dar
 import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
+import 'package:growmind/features/favourites/domain/usecases/fetch_favorite_course_usecase.dart';
 import 'package:growmind/features/favourites/domain/usecases/get_favourite_course.dart';
 import 'package:growmind/features/favourites/domain/usecases/is_favourite.dart';
 import 'package:growmind/features/favourites/domain/usecases/toggle_favourite.dart';
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=> TopTutorsBloc(getIt<TopTutorsUsecases>())),
                                   BlocProvider(create: (context)=> ChatBloc(getIt<ChatUsecases>()),),
                                   BlocProvider(create: (context)=> MentorBloc(getIt<ChatMentorsUsecases>())),
-                                  BlocProvider(create: (context)=> FavoriteBloc(getFavouriteCourse: getIt<GetFavouriteCourse>(), isFavourite: getIt<IsFavourite>(), toggleFavourite: getIt<ToggleFavourite>()))
+                                  BlocProvider(create: (context)=> FavoriteBloc( fetchFavoriteCourseUsecase: getIt<FetchFavoriteCourseUsecase>(),getFavouriteCourse: getIt<GetFavouriteCourse>(), isFavourite: getIt<IsFavourite>(), toggleFavourite: getIt<ToggleFavourite>()))
             ],
             child: MaterialApp(
               theme: ThemeData(

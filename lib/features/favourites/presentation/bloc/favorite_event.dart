@@ -2,17 +2,21 @@ abstract class FavoriteEvent {}
 
 class LoadFavoriteEvent extends FavoriteEvent {
   final String userId;
-  LoadFavoriteEvent(this.userId);
+  LoadFavoriteEvent({required this.userId});
 }
 
 class ToggleFavoriteEvent extends FavoriteEvent {
   final String userId;
   final String courseId;
-  ToggleFavoriteEvent(this.courseId, this.userId);
+  ToggleFavoriteEvent({required this.userId, required this.courseId});
+}
+class SearchCourseEvent extends FavoriteEvent {
+  final String query;
+  SearchCourseEvent(this.query);
 }
 
 class CheckFavoriteEvent extends FavoriteEvent {
   final String userId;
   final String courseId;
-  CheckFavoriteEvent(this.userId, this.courseId);
+  CheckFavoriteEvent({required this.userId, required this.courseId});
 }

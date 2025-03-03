@@ -21,6 +21,17 @@ class FetchCourseBloc extends Bloc<CourseEvent, CourseState> {
         emit(CourseError(e.toString()));
       }
     });
+    on<FetchAllCourseEvent>((event, emit) async {
+      emit(CourseLoading());
+      try {
+        final course = await fetchCourseUsecases.fetchAllCourse();
+        allCourse = course;
+        filteredCourse = course;
+        emit(CourseLoaded(allCourse, filteredCourse, selectedFilter));
+      } catch (e) {
+        emit(CourseError(e.toString()));
+      }
+    });
     on<SearchCourseEvent>((event, emit) async {
       final query = event.query.toLowerCase();
       filteredCourse = allCourse
