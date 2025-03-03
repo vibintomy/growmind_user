@@ -10,13 +10,15 @@ import 'package:growmind/features/home/domain/entities/course_entity.dart';
 import 'package:growmind/features/home/presentation/pages/display_course.dart';
 
 class FavoritesPage extends StatelessWidget {
-  const FavoritesPage({Key? key}) : super(key: key);
+  FavoritesPage({Key? key}) : super(key: key);
+
+  final ValueNotifier<String?> selectedCategory = ValueNotifier<String?>(null);
 
   @override
   Widget build(BuildContext context) {
     final String userId = FirebaseAuth.instance.currentUser!.uid;
-
     context.read<FavoriteBloc>().add(LoadFavoriteEvent(userId: userId));
+
     return Scaffold(
       backgroundColor: textColor,
       appBar: AppBar(
@@ -31,6 +33,7 @@ class FavoritesPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            // Search Field
             Container(
               height: 50,
               width: 350,
@@ -54,7 +57,7 @@ class FavoritesPage extends StatelessWidget {
                         height: 10,
                         width: 10,
                         decoration: const BoxDecoration(
-                            color: mainColor,
+                            color: textColor1,
                             borderRadius: BorderRadius.all(Radius.circular(5))),
                         child: const Icon(
                           Icons.search,
@@ -71,14 +74,69 @@ class FavoritesPage extends StatelessWidget {
               ),
             ),
             kheight,
-            Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                    onPressed: () {
-                    // Drowpdownmenu()
-                    },
-                    icon: const Icon(Icons.filter_list_rounded))),
+
+            // Sorting & Filtering Options
+            BlocBuilder<FavoriteBloc, FavoriteState>(
+              builder: (context, favoriteState) {
+                if (favoriteState is FavoriteStateLoaded) {
+                  final List<CourseEntity> favoriteCourses =
+                      favoriteState.favoriteCourses;
+
+                  // Extract unique subcategories
+                  final List<String> subCategories = favoriteCourses
+                      .map((course) => course.subCategory)
+                      .toSet()
+                      .toList();
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Sort Button
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          context.read<FavoriteBloc>().add(SortByPriceEvent());
+                        },
+                        icon:const Icon(Icons.sort, color: textColor),
+                        label:
+                          const  Text('Sort by Price', style: TextStyle(color: textColor)),
+                        style: ElevatedButton.styleFrom(backgroundColor: mainColor),
+                      ),
+
+                      // Filter Dropdown (Dynamic Categories)
+                      ValueListenableBuilder<String?>(
+                        valueListenable: selectedCategory,
+                        builder: (context, value, _) {
+                          return DropdownButton<String>(
+                            hint: const Text("Filter by Category"),
+                            value: value,
+                            icon: const Icon(Icons.filter_list_rounded),
+                            onChanged: (String? newValue) {
+                              selectedCategory.value = newValue;
+                              if (newValue != null) {
+                                context
+                                    .read<FavoriteBloc>()
+                                    .add(FilterByCategoryEvent(newValue));
+                              }
+                            },
+                            items: subCategories
+                                .map<DropdownMenuItem<String>>((String category) {
+                              return DropdownMenuItem<String>(
+                                value: category,
+                                child: Text(category),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink(); // Hide filtering until data is loaded
+              },
+            ),
             kheight,
+
+            // Display Favorite Courses
             Expanded(
               child: BlocBuilder<FavoriteBloc, FavoriteState>(
                 builder: (context, favoriteState) {
@@ -88,14 +146,11 @@ class FavoritesPage extends StatelessWidget {
                     final List<CourseEntity> favoriteCourses =
                         favoriteState.favoriteCourses;
                     return favoriteCourses.isEmpty
-                        ? Center(
-                            child: Text('No specified Course found'),
-                          )
+                        ?const Center(child: Text('No specified Course found'))
                         : ListView.builder(
                             itemCount: favoriteCourses.length,
                             itemBuilder: (context, index) {
-                              final CourseEntity course =
-                                  favoriteCourses[index];
+                              final CourseEntity course = favoriteCourses[index];
                               return SizedBox(
                                 height: 180,
                                 child: Card(

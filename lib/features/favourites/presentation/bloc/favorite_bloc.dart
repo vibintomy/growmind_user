@@ -13,8 +13,8 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
   final ToggleFavourite toggleFavourite;
   final FetchFavoriteCourseUsecase fetchFavoriteCourseUsecase;
 
-  List<CourseEntity> filteredCourse = [];
   List<CourseEntity> favoriteCourses = [];
+  List<CourseEntity> filteredCourses = [];
 
   FavoriteBloc({
     required this.getFavouriteCourse,
@@ -25,17 +25,15 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     on<LoadFavoriteEvent>(_onLoadFavorites);
     on<ToggleFavoriteEvent>(_onToggleFavorite);
     on<CheckFavoriteEvent>(_onCheckFavorite);
-    on<SearchCourseEvent>(onSearchEvent);
+    on<SearchCourseEvent>(_onSearchEvent);
+    on<SortByPriceEvent>(_onSortByPrice);
+    on<FilterByCategoryEvent>(_onFilterByCategory);
   }
 
-  Future<void> _onLoadFavorites(
-      LoadFavoriteEvent event, Emitter<FavoriteState> emit) async {
+  Future<void> _onLoadFavorites(LoadFavoriteEvent event, Emitter<FavoriteState> emit) async {
     emit(FavoriteStateLoading());
-
     try {
-      final List<String> favoriteCourseIds =
-          await getFavouriteCourse(event.userId);
-
+      final List<String> favoriteCourseIds = await getFavouriteCourse(event.userId);
       if (favoriteCourseIds.isEmpty) {
         emit(FavoriteStateLoaded(favoriteCourses: []));
         return;
@@ -43,11 +41,10 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
 
       final List<CourseEntity> fetchedCourses = [];
       for (String courseId in favoriteCourseIds) {
-        final List<CourseEntity> courses =
-            await fetchFavoriteCourseUsecase.fetchCourse(courseId);
+        final List<CourseEntity> courses = await fetchFavoriteCourseUsecase.fetchCourse(courseId);
         fetchedCourses.addAll(courses);
       }
-
+      
       favoriteCourses = fetchedCourses;
       emit(FavoriteStateLoaded(favoriteCourses: favoriteCourses));
     } catch (e) {
@@ -55,32 +52,24 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     }
   }
 
-  Future<void> _onToggleFavorite(
-      ToggleFavoriteEvent event, Emitter<FavoriteState> emit) async {
+  Future<void> _onToggleFavorite(ToggleFavoriteEvent event, Emitter<FavoriteState> emit) async {
     try {
       await toggleFavourite(event.userId, event.courseId);
-
       final isNowFavorite = await isFavourite(event.userId, event.courseId);
-
-      emit(
-          IsFavoriteState(isfavorite: isNowFavorite, courseId: event.courseId));
-
+      emit(IsFavoriteState(isfavorite: isNowFavorite, courseId: event.courseId));
       if (isNowFavorite) {
-        final List<CourseEntity> newFavorite =
-            await fetchFavoriteCourseUsecase.fetchCourse(event.courseId);
+        final List<CourseEntity> newFavorite = await fetchFavoriteCourseUsecase.fetchCourse(event.courseId);
         favoriteCourses.addAll(newFavorite);
       } else {
         favoriteCourses.removeWhere((course) => course.id == event.courseId);
       }
-
       emit(FavoriteStateLoaded(favoriteCourses: favoriteCourses));
     } catch (e) {
       emit(FavoriteError(e.toString()));
     }
   }
 
-  Future<void> _onCheckFavorite(
-      CheckFavoriteEvent event, Emitter<FavoriteState> emit) async {
+  Future<void> _onCheckFavorite(CheckFavoriteEvent event, Emitter<FavoriteState> emit) async {
     try {
       final isFavorite = await isFavourite(event.userId, event.courseId);
       emit(IsFavoriteState(isfavorite: isFavorite, courseId: event.courseId));
@@ -89,12 +78,19 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     }
   }
 
-  Future<void> onSearchEvent(
-      SearchCourseEvent event, Emitter<FavoriteState> emit) async {
+  Future<void> _onSearchEvent(SearchCourseEvent event, Emitter<FavoriteState> emit) async {
     final query = event.query.toLowerCase();
-    filteredCourse = favoriteCourses
-        .where((course) => course.courseName.toLowerCase().contains(query))
-        .toList();
-    emit(FavoriteStateLoaded(favoriteCourses: filteredCourse));
+    filteredCourses = favoriteCourses.where((course) => course.courseName.toLowerCase().contains(query)).toList();
+    emit(FavoriteStateLoaded(favoriteCourses: filteredCourses));
+  }
+
+  Future<void> _onSortByPrice(SortByPriceEvent event, Emitter<FavoriteState> emit) async {
+    favoriteCourses.sort((a, b) => a.coursePrice.compareTo(b.coursePrice));
+    emit(FavoriteStateLoaded(favoriteCourses: favoriteCourses));
+  }
+
+  Future<void> _onFilterByCategory(FilterByCategoryEvent event, Emitter<FavoriteState> emit) async {
+    filteredCourses = favoriteCourses.where((course) => course.subCategory == event.category).toList();
+    emit(FavoriteStateLoaded(favoriteCourses: filteredCourses));
   }
 }

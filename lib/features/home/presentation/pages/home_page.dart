@@ -8,6 +8,7 @@ import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchase
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_event.dart';
 import 'package:growmind/features/home/presentation/pages/categories.dart';
+import 'package:growmind/features/home/presentation/widgets/carousel1.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
@@ -27,7 +28,7 @@ class HomePage extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     final profilebloc = context.read<ProfileBloc>();
     profilebloc.add(LoadProfileEvent(user!.uid ?? ""));
-      context.read<PurchasedBloc>().add(PurchasedCourseEvent(user!.uid));
+    context.read<PurchasedBloc>().add(PurchasedCourseEvent(user!.uid));
     context.read<TopCoursesBloc>().add(FetchTopCourseEvent());
     return Scaffold(
       backgroundColor: textColor,
@@ -46,9 +47,12 @@ class HomePage extends StatelessWidget {
                       if (state is ProfileLoaded) {
                         final profile = state.profile;
                         return Text(
-                          'Hi,${profile.displayName.toUpperCase()}👋',overflow: TextOverflow.ellipsis,
+                          'Hi,${profile.displayName.toUpperCase()}👋',
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold,),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         );
                       }
                       return const Text('');
@@ -128,7 +132,6 @@ class HomePage extends StatelessWidget {
                 ),
                 kheight1,
                 CarouselSlider.builder(
-                  // carouselController: carouselController,
                   options: CarouselOptions(
                     height: 250.0,
                     autoPlay: true,
@@ -144,18 +147,22 @@ class HomePage extends StatelessWidget {
                     Color? containerColor;
                     Widget? topShape;
                     Widget? bottomShape;
+                    Widget? centerData;
                     if (index == 0) {
                       containerColor = Colors.green;
                       topShape = const CustomPaintWidget1();
                       bottomShape = const CustomWavyShape1();
+                      centerData = const Carousel1();
                     } else if (index == 1) {
                       containerColor = Colors.blue;
                       topShape = const CustomPaintWidget2();
                       bottomShape = const CustomWavyShape2();
+                         centerData = const Carousel1();
                     } else {
                       containerColor = const Color(0xFFFEA384);
                       topShape = const CustomPaintWidget();
                       bottomShape = const CustomWavyShape();
+                         centerData = const Carousel1();
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -187,6 +194,12 @@ class HomePage extends StatelessWidget {
                                   child: topShape,
                                 ),
                               ),
+                              Positioned(
+                                  left: 70,
+                                  right: 5,
+                                  top: 70,
+                                  bottom: 5,
+                                  child: centerData),
                               Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -241,17 +254,28 @@ class HomePage extends StatelessWidget {
                     },
                     child: spinningContainer()),
                 kheight,
-              const  Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                     Text(
+                    Text(
                       'Top 3 Courses',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16,),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                     Row(
                       children: [
-                        Text('view',style: TextStyle(color: mainColor,fontWeight: FontWeight.w600),),
-                        Icon(Icons.arrow_downward,size: 14,color: mainColor,),
+                        Text(
+                          'view',
+                          style: TextStyle(
+                              color: mainColor, fontWeight: FontWeight.w600),
+                        ),
+                        Icon(
+                          Icons.arrow_downward,
+                          size: 14,
+                          color: mainColor,
+                        ),
                       ],
                     )
                   ],
@@ -259,24 +283,34 @@ class HomePage extends StatelessWidget {
                 kheight,
                 topCourses(),
                 kheight,
-          const  Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                     Text(
+                    Text(
                       'Top Mentors',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16,),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                     Row(
                       children: [
-                        Text('view',style: TextStyle(color: mainColor,fontWeight: FontWeight.w600),),
-                        Icon(Icons.arrow_downward,size: 14,color: mainColor,),
+                        Text(
+                          'view',
+                          style: TextStyle(
+                              color: mainColor, fontWeight: FontWeight.w600),
+                        ),
+                        Icon(
+                          Icons.arrow_downward,
+                          size: 14,
+                          color: mainColor,
+                        ),
                       ],
                     )
                   ],
                 ),
                 kheight,
-              const  TopMentors(),
-              
+                const TopMentors(),
               ],
             ),
           ),
@@ -284,5 +318,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
 }
