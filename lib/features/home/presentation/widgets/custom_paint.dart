@@ -35,8 +35,7 @@ class MyShape extends CustomPainter {
 
     path.quadraticBezierTo(size.width * 0.8, size.height * 0.3, size.width * 1.0,
         size.height * 0.4);
-        //  path.quadraticBezierTo(size.width * 0.95, size.height * 0.6, size.width,
-        // size.height * 0.3);
+      
     path.lineTo(size.width, 0);
     path.lineTo(0, 0);
     path.close();

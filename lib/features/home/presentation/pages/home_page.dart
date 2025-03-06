@@ -9,6 +9,8 @@ import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_co
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_event.dart';
 import 'package:growmind/features/home/presentation/pages/categories.dart';
 import 'package:growmind/features/home/presentation/widgets/carousel1.dart';
+import 'package:growmind/features/home/presentation/widgets/carousel2.dart';
+import 'package:growmind/features/home/presentation/widgets/carousel3.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
 import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
@@ -157,12 +159,12 @@ class HomePage extends StatelessWidget {
                       containerColor = Colors.blue;
                       topShape = const CustomPaintWidget2();
                       bottomShape = const CustomWavyShape2();
-                         centerData = const Carousel1();
+                         centerData = const Carousel3();
                     } else {
                       containerColor = const Color(0xFFFEA384);
                       topShape = const CustomPaintWidget();
                       bottomShape = const CustomWavyShape();
-                         centerData = const Carousel1();
+                         centerData = const Carousel2();
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -195,9 +197,9 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                               Positioned(
-                                  left: 70,
+                                  left: 30,
                                   right: 5,
-                                  top: 70,
+                                  top: 80,
                                   bottom: 5,
                                   child: centerData),
                               Positioned(

@@ -6,8 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 class PaymentScreen extends StatefulWidget {
   final String courseId;
   final String createdBy;
+  final String courseName;
+  final int coursePrice;
 
-  PaymentScreen({required this.courseId, required this.createdBy});
+  PaymentScreen({
+    required this.courseId,
+    required this.createdBy,
+    required this.courseName,
+    required this.coursePrice,
+  });
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -23,12 +30,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     super.initState();
     _razorpay = Razorpay();
 
-    // Event listeners
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 
-    // Trigger payment automatically
     WidgetsBinding.instance.addPostFrameCallback((_) {
       openCheckout();
     });
@@ -37,7 +42,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void openCheckout() {
     var options = {
       'key': 'rzp_test_F94zuwkEe8DLrJ',
-      'amount': 1000,
+      'amount': widget.coursePrice * 100,
       'name': 'Your App Name',
       'description': 'Payment for Course #${widget.courseId}',
       'prefill': {
@@ -56,83 +61,97 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    print('✅ Payment Success: ${response.paymentId}');
+ Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
+  User? user = _auth.currentUser;
+  if (user != null) {
+    try {
+      String userId = user.uid;
+      String courseId = widget.courseId;
+      String courseName = widget.courseName;
+      int coursePrice = widget.coursePrice;
+      DateTime now = DateTime.now();
 
-    User? user = _auth.currentUser;
-    if (user != null) {
-      try {
-        String userId = user.uid;
-        String courseId = widget.courseId;
-        DateTime now = DateTime.now();
+      await _firestore.collection('users').doc(userId).set({
+        'mentor': FieldValue.arrayUnion([widget.createdBy]),
+        'purchasedCourses': FieldValue.arrayUnion([courseId])
+      }, SetOptions(merge: true));
 
-        // ✅ Update 'purchasedCourses' in the users collection
-        await _firestore.collection('users').doc(userId).set({
-          'mentor':FieldValue.arrayUnion([widget.createdBy]),
-          'purchasedCourses': FieldValue.arrayUnion([courseId])
+      DocumentReference courseRef = _firestore.collection('courses').doc(courseId);
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(courseRef);
+        int currentCount = snapshot.exists ? (snapshot['purchasesCount'] ?? 0) : 0;
+        transaction.set(courseRef, {'purchasesCount': currentCount + 1}, SetOptions(merge: true));
+      });
+
+      DocumentReference tutorRef = _firestore.collection('tutors').doc(widget.createdBy);
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(tutorRef);
+        List<dynamic> joiners = snapshot.exists ? (snapshot['joiners'] ?? []) : [];
+        int totalUsers = snapshot.exists ? (snapshot['totalusers'] ?? 0) : 0;
+        joiners.add(userId);
+        transaction.set(tutorRef, {
+          'joiners': joiners,
+          'totalusers': totalUsers + 1,
+          'joinDateTime': {userId: now.toIso8601String()}
         }, SetOptions(merge: true));
-        print("✅ Course $courseId added to user's purchasedCourses.");
+      });
 
-        DocumentReference courseRef =
-            _firestore.collection('courses').doc(courseId);
+      DocumentReference adminRef = _firestore.collection('admin').doc('stats');
 
-        await _firestore.runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(courseRef);
-
-          if (!snapshot.exists) {
-            transaction.set(courseRef, {'purchasesCount': 1});
-          } else {
-            Map<String, dynamic> courseData =
-                snapshot.data() as Map<String, dynamic>;
-            if (!courseData.containsKey('purchasesCount')) {
-              transaction.update(courseRef, {'purchasesCount': 1});
-            } else {
-              int currentCount = courseData['purchasesCount'] ?? 0;
-              transaction
-                  .update(courseRef, {'purchasesCount': currentCount + 1});
-            }
-          }
+      // **Step 1: Ensure 'admin/stats' exists**
+      DocumentSnapshot adminSnapshot = await adminRef.get();
+      if (!adminSnapshot.exists) {
+        await adminRef.set({
+          'totalRevenue': 0,
+          'courses': {}
         });
-
-        DocumentReference tutorRef =
-            _firestore.collection('tutors').doc(widget.createdBy);
-
-        await _firestore.runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(tutorRef);
-
-          if (!snapshot.exists) {
-            transaction.set(tutorRef, {
-              'totalusers': 1,
-              'joiners': [userId],
-              'joinDateTime': {userId: now.toIso8601String()}
-            });
-          } else {
-            Map<String, dynamic> tutorData =
-                snapshot.data() as Map<String, dynamic>;
-            List<dynamic> joiners = tutorData['joiners'] ?? [];
-            Map<String, dynamic> joinDateTime = tutorData['joinDateTime'] ?? {};
-            int totaluser = (tutorData['totalusers'] ?? 0) as int;
-            joiners.add(userId);
-            joinDateTime[userId] = now.toIso8601String();
-           
-            transaction.update(tutorRef, {
-              'joiners': joiners,
-              'joinDateTime': joinDateTime,
-              'totalusers': totaluser+1
-            });
-
-          
-          }
-        });
-      } catch (e) {
-        throw Exception("❌ Firestore Error: $e");
+        print("✅ 'admin/stats' document created successfully.");
       }
-    } else {
-      throw Exception("❌ No authenticated user found.");
-    }
 
-    Navigator.pop(context, false);
+      // **Step 2: Get 'admin/stats' after creation**
+      adminSnapshot = await adminRef.get();
+      if (!adminSnapshot.exists) {
+        throw Exception("❌ Failed to create 'admin/stats'.");
+      }
+
+      // **Step 3: Extract fields safely**
+      int currentRevenue = (adminSnapshot.data() as Map<String, dynamic>)['totalRevenue'] ?? 0;
+      Map<String, dynamic> courses = (adminSnapshot.data() as Map<String, dynamic>)['courses'] ?? {};
+
+
+      // **Step 4: Update Firestore inside transaction**
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(adminRef);
+
+        if (!snapshot.exists) {
+          throw Exception("❌ 'admin/stats' document is missing inside transaction.");
+        }
+
+        int newRevenue = (snapshot['totalRevenue'] ?? 0) + coursePrice;
+        if (courses.containsKey(courseId)) {
+          courses[courseId]['purchases'] = (courses[courseId]['purchases'] ?? 0) + 1;
+          courses[courseId]['revenue'] = (courses[courseId]['revenue'] ?? 0) + coursePrice;
+        } else {
+          courses[courseId] = {'name': courseName, 'purchases': 1, 'revenue': coursePrice};
+        }
+
+        transaction.set(adminRef, {
+          'totalRevenue': newRevenue,
+          'courses': courses
+        }, SetOptions(merge: true));
+      });
+
+      print("✅ Payment processed successfully!");
+    } catch (e) {
+      print("❌ Firestore Error: $e");
+      throw Exception("❌ Firestore Error: $e");
+    }
+  } else {
+    throw Exception("❌ No authenticated user found.");
   }
+  Navigator.pop(context, false);
+}
+
 
   void _handlePaymentError(PaymentFailureResponse response) {
     print('Payment Error: ${response.code} - ${response.message}');
@@ -145,7 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   void dispose() {
-    _razorpay.clear(); // Clean up
+    _razorpay.clear();
     super.dispose();
   }
 
@@ -154,7 +173,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Processing Payment...')),
       body: const Center(
-        child: CircularProgressIndicator(), // Show a loading indicator
+        child: CircularProgressIndicator(),
       ),
     );
   }

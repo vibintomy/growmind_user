@@ -38,7 +38,7 @@ class AnimatedWheel extends StatelessWidget {
           return Positioned(
             left: 100 +
                 80 * cos(iconAngle) -
-                15, // Adjusting for center alignment
+                15, 
             top: 100 + 80 * sin(iconAngle) - 15,
             child: Transform.rotate(
               angle: -angle, // Keep stars upright

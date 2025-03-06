@@ -237,6 +237,8 @@ class DisplayCourse extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PaymentScreen(
+                                  coursePrice: int.parse(coursePrice),
+                                  courseName: subCategory,
                                       courseId: id,
                                       createdBy: createdBy,
                                     )));
