@@ -35,7 +35,7 @@ class CustomWave extends CustomPainter {
     path.quadraticBezierTo(
         size.width * 0, size.height * 0.75, 0, size.height);
 
-    // path.lineTo(size.width, 0);
+  
     path.lineTo(size.width, size.height);
 
     path.close();
@@ -81,7 +81,7 @@ class CustomWave1 extends CustomPainter {
     path.quadraticBezierTo(
         size.width * 0, size.height * 0.75, 0, size.height);
 
-    // path.lineTo(size.width, 0);
+
     path.lineTo(size.width, size.height);
     
     path.close();

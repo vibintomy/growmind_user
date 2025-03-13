@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/core/widget/shimmer.dart';
 import 'package:growmind/features/home/domain/entities/section_entity.dart';
 import 'package:growmind/features/home/presentation/bloc/curriculum_bloc/curriculum_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/curriculum_bloc/curriculum_event.dart';
@@ -45,7 +46,7 @@ class Curriculum extends StatelessWidget {
           }
           if (purchasedState is PurchasedLoaded) {
             final purchasedCourses =
-                purchasedState.course; // List of purchased course IDs
+                purchasedState.course; 
             final isPurchased =
                 purchasedCourses.any((id) => id.userId == courseId);
 
@@ -67,10 +68,10 @@ class Curriculum extends StatelessWidget {
               );
             }
 
-            // Show the curriculum only if the course is purchased
+          
             return cariculumbuilder();
           } else if (purchasedState is PurchasedLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: ShimmerLoading());
           } else {
             return const Center(child: Text("Error loading purchases"));
           }
@@ -103,7 +104,7 @@ class Curriculum extends StatelessWidget {
                         Text(
                           ' - ${sections.sectionName}',
                           style: const TextStyle(
-                            color: Colors.green,
+                            color: greenColor,
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
@@ -121,7 +122,7 @@ class Curriculum extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            '${index + 1}', // Show correct index starting from 1
+                            '${index + 1}', 
                             style: const TextStyle(fontSize: 20),
                           ),
                         ),
@@ -168,7 +169,7 @@ class Curriculum extends StatelessWidget {
                                 bottom: 5,
                                 child: Icon(
                                   Icons.play_circle,
-                                  color: Colors.blue,
+                                  color: blueColor,
                                 ),
                               ),
                           ],

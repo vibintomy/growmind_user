@@ -138,7 +138,8 @@ class MessagePage extends HookWidget {
                             ),
                             Text(
                               DateFormat.Hm() .format(DateTime.parse(message.timeStamp.toString()))
-                            )
+                            ),
+                          
                           ],
                         ),
                       ),

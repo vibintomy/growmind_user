@@ -48,5 +48,24 @@ class FetchCourseBloc extends Bloc<CourseEvent, CourseState> {
               .toList();
       emit(CourseLoaded(allCourse, filteredCourse, selectedFilter));
     });
+    on<HomeSearchEvent>(onHomeSearch);
+  }
+
+  Future<void> onHomeSearch(
+      HomeSearchEvent event, Emitter<CourseState> emit) async {
+    emit(CourseLoading());
+    try {
+      if (event.query.isEmpty) {
+        final courses = await fetchCourseUsecases.fetchAllCourse();
+        allCourse = courses;
+        filteredCourse = courses;
+      } else {
+        final courses = await fetchCourseUsecases.searchCourses(event.query);
+        filteredCourse = courses;
+        emit(CourseLoaded(allCourse, filteredCourse, selectedFilter));
+      }
+    } catch (e) {
+      emit(CourseError(e.toString()));
+    }
   }
 }

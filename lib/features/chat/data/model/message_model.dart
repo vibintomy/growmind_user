@@ -8,12 +8,15 @@ class MessageModel extends Message {
       required String senderId,
       required String receiverId,
       required String message,
-      required  DateTime timeStamp})
+      required  DateTime timeStamp,
+      required String lastMessage,
+      })
       : super(
             senderId: senderId,
             receiverId: receiverId,
             message: message,
-            timeStamp: timeStamp);
+            timeStamp: timeStamp,
+            lastMessage: lastMessage);
             factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['id'],
@@ -21,6 +24,7 @@ class MessageModel extends Message {
       receiverId: json['receiverId'],
       message: json['message'],
       timeStamp: (json['timeStamp'] as Timestamp).toDate(),
+      lastMessage: json['lastMessage'] ?? ''
     );
   }
 
@@ -29,7 +33,8 @@ class MessageModel extends Message {
       'senderId': senderId,
       'receiverId': receiverId,
       'message': message,
-      'timeStamp': timeStamp
+      'timeStamp': timeStamp,
+      'lastMessage':lastMessage
     };
   }
 }

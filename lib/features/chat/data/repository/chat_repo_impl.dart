@@ -18,7 +18,8 @@ class ChatRepoImpl implements ChatRepositories {
         senderId: message.senderId,
         receiverId: message.receiverId,
         message: message.message,
-        timeStamp: message.timeStamp);
+        timeStamp: message.timeStamp,
+        lastMessage: message.lastMessage.toString());
     await chatRemoteDatasource.sendMessage(messageModel);
   }
 }

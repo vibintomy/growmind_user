@@ -2,25 +2,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/features/profile/presentation/bloc/my_courses_bloc/my_courses_bloc.dart';
+import 'package:growmind/features/profile/presentation/bloc/my_courses_bloc/my_courses_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
+import 'package:growmind/features/profile/presentation/pages/help_center.dart';
+import 'package:growmind/features/profile/presentation/pages/my_courses.dart';
+import 'package:growmind/features/profile/presentation/pages/terms_and_contions.dart';
 import 'package:growmind/features/profile/presentation/pages/update_profile.dart';
 import 'package:growmind/features/profile/presentation/widgets/aler_box.dart';
 
 class ProfilePage extends StatelessWidget {
- const ProfilePage({super.key});
- 
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      print('No user currently logged in');
-
-      print('No user currently logged in');
+      throw Exception('no User found');
     }
     final profileBloc = context.read<ProfileBloc>();
-    profileBloc.add(LoadProfileEvent(user!.uid));
+    profileBloc.add(LoadProfileEvent(user.uid));
 
     return Scaffold(
       appBar: PreferredSize(
@@ -130,6 +133,7 @@ class ProfilePage extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => UpdatePage()));
                             final user = FirebaseAuth.instance.currentUser;
+                            // ignore: use_build_context_synchronously
                             context
                                 .read<ProfileBloc>()
                                 .add(LoadProfileEvent(user!.uid));
@@ -151,20 +155,33 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         kheight2,
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.wallet,
-                              color: Color.fromARGB(255, 235, 211, 0),
-                            ),
-                            kwidth,
-                            Text(
-                              'My course',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            Icon(Icons.arrow_right)
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MyCourses()));
+                            final userId =
+                                FirebaseAuth.instance.currentUser!.uid;
+                            context
+                                .read<MyCoursesBloc>()
+                                .add(GetMyCoursesEvent(userId: userId));
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.wallet,
+                                color: Color.fromARGB(255, 235, 211, 0),
+                              ),
+                              kwidth,
+                              Text(
+                                'My course',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Icon(Icons.arrow_right)
+                            ],
+                          ),
                         ),
                         kheight2,
                         const Row(
@@ -183,36 +200,53 @@ class ProfilePage extends StatelessWidget {
                           ],
                         ),
                         kheight2,
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.security,
-                              color: Colors.green,
-                            ),
-                            kwidth,
-                            Text(
-                              'Terms & conditions',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            Icon(Icons.arrow_right)
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TermsAndConditionsPage()));
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.security,
+                                color: Colors.green,
+                              ),
+                              kwidth,
+                              Text(
+                                'Terms & conditions',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Icon(Icons.arrow_right)
+                            ],
+                          ),
                         ),
                         kheight2,
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.help_center,
-                              color: Colors.purple,
-                            ),
-                            kwidth,
-                            Text(
-                              'Help Center',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            Icon(Icons.arrow_right)
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HelpCenter()));
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.help_center,
+                                color: Colors.purple,
+                              ),
+                              kwidth,
+                              Text(
+                                'Help Center',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              Icon(Icons.arrow_right)
+                            ],
+                          ),
                         ),
                         kheight2,
                         alertBox(context),

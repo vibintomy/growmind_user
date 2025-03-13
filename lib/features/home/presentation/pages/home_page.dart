@@ -8,6 +8,7 @@ import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchase
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_event.dart';
 import 'package:growmind/features/home/presentation/pages/categories.dart';
+import 'package:growmind/features/home/presentation/pages/search_page.dart';
 import 'package:growmind/features/home/presentation/widgets/carousel1.dart';
 import 'package:growmind/features/home/presentation/widgets/carousel2.dart';
 import 'package:growmind/features/home/presentation/widgets/carousel3.dart';
@@ -107,6 +108,7 @@ class HomePage extends StatelessWidget {
                             color: greyColor)
                       ]),
                   child: TextField(
+                    readOnly: true,
                     showCursor: false,
                     decoration: InputDecoration(
                         hintText: 'Search',
@@ -129,7 +131,12 @@ class HomePage extends StatelessWidget {
                         border: const OutlineInputBorder(
                           borderSide: BorderSide.none,
                         )),
-                    onChanged: (value) {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>const SearchPage()));
+                    },
                   ),
                 ),
                 kheight1,
@@ -159,12 +166,12 @@ class HomePage extends StatelessWidget {
                       containerColor = Colors.blue;
                       topShape = const CustomPaintWidget2();
                       bottomShape = const CustomWavyShape2();
-                         centerData = const Carousel3();
+                      centerData = const Carousel3();
                     } else {
                       containerColor = const Color(0xFFFEA384);
                       topShape = const CustomPaintWidget();
                       bottomShape = const CustomWavyShape();
-                         centerData = const Carousel2();
+                      centerData = const Carousel2();
                     }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),

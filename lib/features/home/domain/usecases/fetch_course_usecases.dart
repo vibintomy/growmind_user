@@ -12,4 +12,8 @@ class FetchCourseUsecases {
   Future<List<CourseEntity>> fetchAllCourse() async {
     return courseRepo.fetchAllCourse();
   }
+
+  Future<List<CourseEntity>> searchCourses(String query) async {
+    return courseRepo.searchCourses(query);
+  }
 }

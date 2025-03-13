@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/core/utils/service.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_bloc.dart';
@@ -14,7 +13,9 @@ import 'package:growmind/features/auth/presentation/pages/splash_screen.dart';
 import 'package:growmind/features/bottom_navigation/presentation/pages/bottom_navigation.dart';
 import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dart';
 import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:growmind/features/chat/domain/usecases/last_chat_usecases.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:growmind/features/chat/presentation/bloc/last_chat_bloc/last_chat_bloc.dart';
 import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import 'package:growmind/features/favourites/domain/usecases/fetch_favorite_course_usecase.dart';
 import 'package:growmind/features/favourites/domain/usecases/get_favourite_course.dart';
@@ -36,7 +37,9 @@ import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchase
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_tutors_bloc/top_tutors_bloc.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
+import 'package:growmind/features/profile/domain/usecases/my_courses_usecases.dart';
 import 'package:growmind/features/profile/domain/usecases/update_profile_usecases.dart';
+import 'package:growmind/features/profile/presentation/bloc/my_courses_bloc/my_courses_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/update_profile_bloc/bloc/update_profile_bloc.dart';
 
@@ -79,7 +82,9 @@ class MyApp extends StatelessWidget {
                                   BlocProvider(create: (context)=> TopTutorsBloc(getIt<TopTutorsUsecases>())),
                                   BlocProvider(create: (context)=> ChatBloc(getIt<ChatUsecases>()),),
                                   BlocProvider(create: (context)=> MentorBloc(getIt<ChatMentorsUsecases>())),
-                                  BlocProvider(create: (context)=> FavoriteBloc( fetchFavoriteCourseUsecase: getIt<FetchFavoriteCourseUsecase>(),getFavouriteCourse: getIt<GetFavouriteCourse>(), isFavourite: getIt<IsFavourite>(), toggleFavourite: getIt<ToggleFavourite>()))
+                                  BlocProvider(create: (context)=> FavoriteBloc( fetchFavoriteCourseUsecase: getIt<FetchFavoriteCourseUsecase>(),getFavouriteCourse: getIt<GetFavouriteCourse>(), isFavourite: getIt<IsFavourite>(), toggleFavourite: getIt<ToggleFavourite>())),
+                                  BlocProvider(create: (context)=> LastChatBloc(getIt<LastChatUsecases>())),
+                                  BlocProvider(create: (context)=> MyCoursesBloc(getIt<MyCoursesUsecases>()))
             ],
             child: MaterialApp(
               theme: ThemeData(

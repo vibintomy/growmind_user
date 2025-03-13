@@ -33,7 +33,7 @@ class AnimatedWheel extends StatelessWidget {
         ),
         ...List.generate(6, (index) {
           double iconAngle = (index * 2 * pi) / 6 +
-              angle; // Dynamically rotate stars' positions
+              angle; 
 
           return Positioned(
             left: 100 +
@@ -41,7 +41,7 @@ class AnimatedWheel extends StatelessWidget {
                 15, 
             top: 100 + 80 * sin(iconAngle) - 15,
             child: Transform.rotate(
-              angle: -angle, // Keep stars upright
+              angle: -angle, 
               child: Container(
                 decoration:const BoxDecoration(
                   shape: BoxShape.circle,

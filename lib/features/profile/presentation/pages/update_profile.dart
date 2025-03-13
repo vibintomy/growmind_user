@@ -9,7 +9,6 @@ import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/pr
 import 'package:growmind/features/profile/presentation/bloc/update_profile_bloc/bloc/update_profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/update_profile_bloc/bloc/update_profile_event.dart';
 import 'package:growmind/features/profile/presentation/bloc/update_profile_bloc/bloc/update_profile_state.dart';
-import 'package:growmind/features/profile/presentation/pages/profile_page.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UpdatePage extends StatelessWidget {

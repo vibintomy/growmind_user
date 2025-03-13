@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:growmind/core/utils/constants.dart';
+import 'package:growmind/core/widget/shimmer.dart';
 import 'package:growmind/features/favourites/presentation/pages/favoriteIcon.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/fetch_course_bloc/fetch_course_event.dart';
@@ -121,7 +122,7 @@ class Courses extends StatelessWidget {
                 builder: (context, state) {
               if (state is CourseLoading) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child: ShimmerLoading(),
                 );
               } else if (state is CourseLoaded) {
                 final courses = state.filteredCourses;

@@ -6,11 +6,15 @@ import 'package:growmind/features/chat/data/datasource/chat_remot_datasource_imp
 import 'package:growmind/features/chat/data/datasource/chat_remote_datasource.dart';
 import 'package:growmind/features/chat/data/repository/chat_mentor_repo_impl.dart';
 import 'package:growmind/features/chat/data/repository/chat_repo_impl.dart';
+import 'package:growmind/features/chat/data/repository/last_chat_repo_impl.dart';
 import 'package:growmind/features/chat/domain/repositories/chat_mentor_repositories.dart';
 import 'package:growmind/features/chat/domain/repositories/chat_repositories.dart';
+import 'package:growmind/features/chat/domain/repositories/last_chat_repositories.dart';
 import 'package:growmind/features/chat/domain/usecases/chat_mentors_usecases.dart';
 import 'package:growmind/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:growmind/features/chat/domain/usecases/last_chat_usecases.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:growmind/features/chat/presentation/bloc/last_chat_bloc/last_chat_bloc.dart';
 import 'package:growmind/features/chat/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import 'package:growmind/features/favourites/data/datasource/favourite_remote_datasource.dart';
 import 'package:growmind/features/favourites/data/datasource/favourite_remote_datasource_impl.dart';
@@ -49,12 +53,16 @@ import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchase
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_tutors_bloc/top_tutors_bloc.dart';
 import 'package:growmind/features/profile/data/datasource/profile_remote_datasource.dart';
+import 'package:growmind/features/profile/data/repo/my_courses_repo_impl.dart';
 import 'package:growmind/features/profile/data/repo/profile_repo.dart';
 import 'package:growmind/features/profile/data/repo/update_profile_repoimpl.dart';
+import 'package:growmind/features/profile/domain/repo/my_courses_repo.dart';
 import 'package:growmind/features/profile/domain/repo/profile_repo.dart';
 import 'package:growmind/features/profile/domain/repo/update_profile_repo.dart';
 import 'package:growmind/features/profile/domain/usecases/get_profile.dart';
+import 'package:growmind/features/profile/domain/usecases/my_courses_usecases.dart';
 import 'package:growmind/features/profile/domain/usecases/update_profile_usecases.dart';
+import 'package:growmind/features/profile/presentation/bloc/my_courses_bloc/my_courses_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_bloc.dart';
 import 'package:growmind/features/profile/presentation/bloc/update_profile_bloc/bloc/update_profile_bloc.dart';
 
@@ -107,6 +115,10 @@ void setUp() {
       () => FavouriteRemoteDatasourceImpl(getIt<FirebaseFirestore>()));
   getIt.registerLazySingleton<FavouriteRepository>(
       () => FavoriteRepoImpl(getIt<FavouriteRemoteDatasource>()));
+  getIt.registerLazySingleton<LastChatRepositories>(
+      () => LastChatRepoImpl(getIt<FirebaseFirestore>()));
+  getIt.registerLazySingleton<MyCoursesRepo>(
+      () => MyCoursesRepoImpl(getIt<FirebaseFirestore>()));
 
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
@@ -132,6 +144,9 @@ void setUp() {
       () => ToggleFavourite(getIt<FavouriteRepository>()));
   getIt.registerLazySingleton(
       () => FetchFavoriteCourseUsecase(getIt<FavouriteRepository>()));
+  getIt.registerLazySingleton(
+      () => LastChatUsecases(getIt<LastChatRepositories>()));
+  getIt.registerLazySingleton(() => MyCoursesUsecases(getIt<MyCoursesRepo>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -156,4 +171,6 @@ void setUp() {
       getFavouriteCourse: getIt<GetFavouriteCourse>(),
       isFavourite: getIt<IsFavourite>(),
       toggleFavourite: getIt<ToggleFavourite>()));
+  getIt.registerFactory(() => LastChatBloc(getIt<LastChatUsecases>()));
+  getIt.registerFactory(() => MyCoursesBloc(getIt<MyCoursesUsecases>()));
 }

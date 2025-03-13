@@ -19,7 +19,8 @@ class ChatMentorRepoImpl extends ChatMentorRepositories {
             email: tutor.email,
             image: tutor.image,
             name: tutor.name,
-            uid: tutor.uid);
+            uid: tutor.uid,
+            );
       }).toList();
       return tutorEntities;
     } catch (e) {

@@ -75,7 +75,7 @@ class FavoritesPage extends StatelessWidget {
             ),
             kheight,
 
-            // Sorting & Filtering Options
+         
             BlocBuilder<FavoriteBloc, FavoriteState>(
               builder: (context, favoriteState) {
                 if (favoriteState is FavoriteStateLoaded) {
@@ -102,7 +102,7 @@ class FavoritesPage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(backgroundColor: mainColor),
                       ),
 
-                      // Filter Dropdown (Dynamic Categories)
+                     
                       ValueListenableBuilder<String?>(
                         valueListenable: selectedCategory,
                         builder: (context, value, _) {

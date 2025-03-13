@@ -23,5 +23,7 @@ const kwidth1 = SizedBox(
 const mainColor = Color(0xFFC82C55);
 const textColor = Colors.white;
 const greyColor = Colors.grey;
+const blueColor = Colors.blue;
+const greenColor = Colors.green;
 
-const  Color textColor1 = Color(0xFFFEA384);
+const Color textColor1 = Color(0xFFFEA384);

@@ -5,13 +5,15 @@ class Message extends Equatable {
   final String receiverId;
   final String message;
   final DateTime timeStamp;
+  final String? lastMessage;
 
- const Message(
+  const Message(
       {required this.senderId,
       required this.receiverId,
       required this.message,
-      required this.timeStamp});
+      required this.timeStamp,
+      this.lastMessage});
 
-      @override  
-      List<Object?> get props => [senderId,receiverId,message,timeStamp];
+  @override
+  List<Object?> get props => [senderId, receiverId, message, timeStamp,lastMessage];
 }

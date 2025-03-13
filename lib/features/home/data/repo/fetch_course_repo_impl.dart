@@ -43,7 +43,7 @@ class FetchCourseRepoimpl extends FetchCourseRepo {
             sections: sections));
       }
       return courses;
-    } catch (e, stackTrace) {
+    } catch (e) {
       throw Exception('Error fetching course');
     }
   }
@@ -84,5 +84,56 @@ class FetchCourseRepoimpl extends FetchCourseRepo {
     } catch (e) {
       throw Exception('Error Fetching all courses');
     }
+  }
+   @override   
+  Future<List<CourseEntity>> searchCourses(String query)async{
+  try{
+    query = query.toLowerCase();
+     final querySnapshot = await firestore.collection('courses').get();
+      List<CourseEntity> courses = [];
+      
+      for (var doc in querySnapshot.docs) {
+        final courseName = (doc['courseName'] as String).toLowerCase();
+        final category = (doc['category'] as String).toLowerCase();
+        
+        if (courseName.contains(query) || category.contains(query)) {
+       
+          final sectionSnapshot = await firestore
+              .collection('courses')
+              .doc(doc.id)
+              .collection('sections')
+              .get();
+              
+          List<SectionEntity> sections = sectionSnapshot.docs.map((sectionDoc) {
+            return SectionEntity(
+              id: sectionDoc.id,
+              videoUrl: sectionDoc['videoUrl'],
+              sectionName: sectionDoc['sectionName'],
+              sectionDescription: sectionDoc['sectionDescription'],
+              createdAt: (sectionDoc['createdAt'] as Timestamp).toDate().toString()
+            );
+          }).toList();
+          
+          courses.add(CourseEntity(
+            id: doc.id,
+            category: doc['category'],
+            courseName: doc['courseName'],
+            courseDescription: doc['courseDescription'],
+            coursePrice: doc['coursePrice'],
+            imageUrl: doc['imageUrl'],
+            subCategory: doc['subCategory'],
+            createdBy: doc['createdBy'],
+            createdAt: (doc['createdAt'] as Timestamp).toDate().toString(),
+            sections: sections
+          ));
+        }
+      }
+      
+      return courses;
+    } catch (e) {
+      throw Exception('Error searching courses: ${e.toString()}');
+    }
+  
+  
   }
 }
