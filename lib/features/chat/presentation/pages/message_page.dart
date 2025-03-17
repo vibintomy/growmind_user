@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart'; 
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/features/chat/domain/entities/chat_entites.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
 import 'package:growmind/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
+import 'package:growmind/features/home/domain/entities/notification_entities.dart';
+import 'package:growmind/features/home/presentation/bloc/notification_bloc/notification_bloc.dart';
+import 'package:growmind/features/home/presentation/bloc/notification_bloc/notification_event.dart';
 import 'package:intl/intl.dart';
 
-class MessagePage extends HookWidget {  
+class MessagePage extends HookWidget {
   final String name;
   final String imageUrl;
   final String receiverId;
@@ -25,11 +28,11 @@ class MessagePage extends HookWidget {
   Widget build(BuildContext context) {
     final messageController = useTextEditingController();
     final scrollController = useScrollController();
-    
-    // Hook for initialization
+
     useEffect(() {
       final userId = FirebaseAuth.instance.currentUser;
       context.read<ChatBloc>().add(LoadMessages(receiverId, userId!.uid));
+      context.read<NotificationBloc>().add(SubscribeToUserTopic(userId.uid));
       return null;
     }, []);
 
@@ -38,6 +41,7 @@ class MessagePage extends HookWidget {
       final text = messageController.text.trim();
       if (text.isNotEmpty) {
         final message = Message(
+   
           senderId: userId!.uid,
           receiverId: receiverId,
           timeStamp: DateTime.now(),
@@ -45,12 +49,23 @@ class MessagePage extends HookWidget {
         );
 
         context.read<ChatBloc>().add(SendMessages(message));
+        final notification = NotificationEntities(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            body: text,
+            title: "New message from ${userId.displayName ?? 'User'}",
+            receiverId: receiverId,
+            data: {'type': message, 'messageId': message.id},
+            senderId: userId.uid,
+            timeStamp: DateTime.now());
+      
+      context.read<NotificationBloc>().add(SendNotification(notification));
+      
         messageController.clear();
 
-        Future.delayed(const  Duration(milliseconds: 300), () {
+        Future.delayed(const Duration(milliseconds: 300), () {
           scrollController.animateTo(
             scrollController.position.maxScrollExtent + 100,
-            duration:const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
           );
         });
@@ -113,13 +128,14 @@ class MessagePage extends HookWidget {
                   controller: scrollController,
                   itemCount: messages.length,
                   reverse: true,
-                  padding:const EdgeInsets.only(bottom: 80),
+                  padding: const EdgeInsets.only(bottom: 80),
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final isMe = message.senderId == receiverId;
-              
+
                     return Align(
-                      alignment: isMe ? Alignment.centerLeft : Alignment.centerRight,
+                      alignment:
+                          isMe ? Alignment.centerLeft : Alignment.centerRight,
                       child: Container(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
@@ -130,16 +146,15 @@ class MessagePage extends HookWidget {
                         ),
                         child: Column(
                           children: [
+                         
                             Text(
                               message.message,
                               style: TextStyle(
                                 color: isMe ? Colors.black : Colors.white,
                               ),
                             ),
-                            Text(
-                              DateFormat.Hm() .format(DateTime.parse(message.timeStamp.toString()))
-                            ),
-                          
+                            Text(DateFormat.Hm().format(
+                                DateTime.parse(message.timeStamp.toString()))),
                           ],
                         ),
                       ),
@@ -178,10 +193,8 @@ class MessagePage extends HookWidget {
               Container(
                 height: 50,
                 width: 50,
-                decoration:const BoxDecoration(
-                  color: textColor,
-                  shape: BoxShape.circle
-                ),
+                decoration: const BoxDecoration(
+                    color: textColor, shape: BoxShape.circle),
                 child: IconButton(
                   onPressed: sendMessage,
                   icon: const Icon(Icons.send, color: mainColor),

@@ -24,11 +24,12 @@ class ChatRemotDatasourceimpl implements ChatRemoteDatasource {
   @override
   Future<void> sendMessage(MessageModel message) async {
     final chatRoomId = getChatRoomId(message.senderId, message.receiverId);
-    await firestore
+    final messageRef = await firestore
         .collection('chat')
         .doc(chatRoomId)
         .collection('messages')
         .add(message.toJson());
+    await messageRef.update({'id': messageRef.id});
     await firestore.collection('chat').doc(chatRoomId).set({
       'lastMessage': message.message,
       'lastMessageTime': message.timeStamp,

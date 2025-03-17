@@ -30,7 +30,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void initState() {
     super.initState();
     currentIndex = widget.initialIndex;
-  }
+  } 
 
   void setPage(int index) {
     setState(() {

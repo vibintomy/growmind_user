@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:growmind/features/chat/domain/entities/chat_entites.dart';
 
 class MessageModel extends Message {
-  final String? id;
+ 
   MessageModel(
-      {this.id,
+      {String? id,
       required String senderId,
       required String receiverId,
       required String message,
@@ -12,6 +12,7 @@ class MessageModel extends Message {
       required String lastMessage,
       })
       : super(
+        id: id,
             senderId: senderId,
             receiverId: receiverId,
             message: message,
@@ -30,6 +31,7 @@ class MessageModel extends Message {
 
   Map<String, dynamic> toJson() {
     return {
+      'id':id,
       'senderId': senderId,
       'receiverId': receiverId,
       'message': message,
