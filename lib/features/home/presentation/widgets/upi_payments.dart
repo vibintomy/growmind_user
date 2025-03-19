@@ -1,4 +1,7 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:growmind/features/home/domain/entities/section_entity.dart';
+import 'package:growmind/features/home/presentation/pages/curriculum.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,12 +11,14 @@ class PaymentScreen extends StatefulWidget {
   final String createdBy;
   final String courseName;
   final int coursePrice;
+   final List<SectionEntity> section;
 
   PaymentScreen({
     required this.courseId,
     required this.createdBy,
     required this.courseName,
     required this.coursePrice,
+    required this.section
   });
 
   @override
@@ -61,97 +66,126 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
- Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-  User? user = _auth.currentUser;
-  if (user != null) {
-    try {
-      String userId = user.uid;
-      String courseId = widget.courseId;
-      String courseName = widget.courseName;
-      int coursePrice = widget.coursePrice;
-      DateTime now = DateTime.now();
+  Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        String userId = user.uid;
+        String courseId = widget.courseId;
+        String courseName = widget.courseName;
+        int coursePrice = widget.coursePrice;
+        DateTime now = DateTime.now();
 
-      await _firestore.collection('users').doc(userId).set({
-        'mentor': FieldValue.arrayUnion([widget.createdBy]),
-        'purchasedCourses': FieldValue.arrayUnion([courseId])
-      }, SetOptions(merge: true));
-
-      DocumentReference courseRef = _firestore.collection('courses').doc(courseId);
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(courseRef);
-        int currentCount = snapshot.exists ? (snapshot['purchasesCount'] ?? 0) : 0;
-        transaction.set(courseRef, {'purchasesCount': currentCount + 1}, SetOptions(merge: true));
-      });
-
-      DocumentReference tutorRef = _firestore.collection('tutors').doc(widget.createdBy);
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(tutorRef);
-        List<dynamic> joiners = snapshot.exists ? (snapshot['joiners'] ?? []) : [];
-        int totalUsers = snapshot.exists ? (snapshot['totalusers'] ?? 0) : 0;
-        joiners.add(userId);
-        transaction.set(tutorRef, {
-          'joiners': joiners,
-          'totalusers': totalUsers + 1,
-          'joinDateTime': {userId: now.toIso8601String()}
+        await _firestore.collection('users').doc(userId).set({
+          'mentor': FieldValue.arrayUnion([widget.createdBy]),
+          'purchasedCourses': FieldValue.arrayUnion([courseId])
         }, SetOptions(merge: true));
-      });
 
-      DocumentReference adminRef = _firestore.collection('admin').doc('stats');
-
-      // **Step 1: Ensure 'admin/stats' exists**
-      DocumentSnapshot adminSnapshot = await adminRef.get();
-      if (!adminSnapshot.exists) {
-        await adminRef.set({
-          'totalRevenue': 0,
-          'courses': {}
+        DocumentReference courseRef =
+            _firestore.collection('courses').doc(courseId);
+        await _firestore.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(courseRef);
+          int currentCount =
+              snapshot.exists ? (snapshot['purchasesCount'] ?? 0) : 0;
+          transaction.set(courseRef, {'purchasesCount': currentCount + 1},
+              SetOptions(merge: true));
         });
-        print("✅ 'admin/stats' document created successfully.");
-      }
 
-      // **Step 2: Get 'admin/stats' after creation**
-      adminSnapshot = await adminRef.get();
-      if (!adminSnapshot.exists) {
-        throw Exception("❌ Failed to create 'admin/stats'.");
-      }
+        DocumentReference tutorRef =
+            _firestore.collection('tutors').doc(widget.createdBy);
+        await _firestore.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(tutorRef);
+          List<dynamic> joiners =
+              snapshot.exists ? (snapshot['joiners'] ?? []) : [];
+          int totalUsers = snapshot.exists ? (snapshot['totalusers'] ?? 0) : 0;
+          joiners.add(userId);
+          transaction.set(
+              tutorRef,
+              {
+                'joiners': joiners,
+                'totalusers': totalUsers + 1,
+                'joinDateTime': {userId: now.toIso8601String()}
+              },
+              SetOptions(merge: true));
+        });
 
-      // **Step 3: Extract fields safely**
-      int currentRevenue = (adminSnapshot.data() as Map<String, dynamic>)['totalRevenue'] ?? 0;
-      Map<String, dynamic> courses = (adminSnapshot.data() as Map<String, dynamic>)['courses'] ?? {};
+        DocumentReference adminRef =
+            _firestore.collection('admin').doc('stats');
 
-
-      // **Step 4: Update Firestore inside transaction**
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(adminRef);
-
-        if (!snapshot.exists) {
-          throw Exception("❌ 'admin/stats' document is missing inside transaction.");
+        // **Step 1: Ensure 'admin/stats' exists**
+        DocumentSnapshot adminSnapshot = await adminRef.get();
+        if (!adminSnapshot.exists) {
+          await adminRef.set({'totalRevenue': 0, 'courses': {}});
+          print("✅ 'admin/stats' document created successfully.");
         }
 
-        int newRevenue = (snapshot['totalRevenue'] ?? 0) + coursePrice;
-        if (courses.containsKey(courseId)) {
-          courses[courseId]['purchases'] = (courses[courseId]['purchases'] ?? 0) + 1;
-          courses[courseId]['revenue'] = (courses[courseId]['revenue'] ?? 0) + coursePrice;
-        } else {
-          courses[courseId] = {'name': courseName, 'purchases': 1, 'revenue': coursePrice};
+        // **Step 2: Get 'admin/stats' after creation**
+        adminSnapshot = await adminRef.get();
+        if (!adminSnapshot.exists) {
+          throw Exception("❌ Failed to create 'admin/stats'.");
         }
 
-        transaction.set(adminRef, {
-          'totalRevenue': newRevenue,
-          'courses': courses
-        }, SetOptions(merge: true));
-      });
+        // **Step 3: Extract fields safely**
+        int currentRevenue =
+            (adminSnapshot.data() as Map<String, dynamic>)['totalRevenue'] ?? 0;
+        Map<String, dynamic> courses =
+            (adminSnapshot.data() as Map<String, dynamic>)['courses'] ?? {};
 
-      print("✅ Payment processed successfully!");
-    } catch (e) {
-      print("❌ Firestore Error: $e");
-      throw Exception("❌ Firestore Error: $e");
+        // **Step 4: Update Firestore inside transaction**
+        await _firestore.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(adminRef);
+
+          if (!snapshot.exists) {
+            throw Exception(
+                "❌ 'admin/stats' document is missing inside transaction.");
+          }
+
+          int newRevenue = (snapshot['totalRevenue'] ?? 0) + coursePrice;
+          if (courses.containsKey(courseId)) {
+            courses[courseId]['purchases'] =
+                (courses[courseId]['purchases'] ?? 0) + 1;
+            courses[courseId]['revenue'] =
+                (courses[courseId]['revenue'] ?? 0) + coursePrice;
+          } else {
+            courses[courseId] = {
+              'name': courseName,
+              'purchases': 1,
+              'revenue': coursePrice
+            };
+          }
+
+          transaction.set(
+              adminRef,
+              {'totalRevenue': newRevenue, 'courses': courses},
+              SetOptions(merge: true));
+        });
+
+        print("✅ Payment processed successfully!");
+      } catch (e) {
+        print("❌ Firestore Error: $e");
+        throw Exception("❌ Firestore Error: $e");
+      }
+    } else {
+      throw Exception("❌ No authenticated user found.");
     }
-  } else {
-    throw Exception("❌ No authenticated user found.");
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Course Purchased',
+        message: 'You are sucessfully purchased the course',
+        contentType: ContentType.success,
+      ),
+    ));
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Curriculum(
+                section: widget.section,
+                courseId: widget.courseId,
+                coursePrice: widget.coursePrice.toString())));
   }
-  Navigator.pop(context, false);
-}
-
 
   void _handlePaymentError(PaymentFailureResponse response) {
     print('Payment Error: ${response.code} - ${response.message}');

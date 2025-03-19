@@ -8,6 +8,8 @@ import 'package:growmind/core/utils/constants.dart';
 import 'package:growmind/core/utils/notification_service.dart';
 import 'package:growmind/core/utils/service.dart';
 import 'package:growmind/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:growmind/features/auth/domain/usecases/google_auth_usecases.dart';
+import 'package:growmind/features/auth/presentation/bloc/google_auth_bloc/google_auth_bloc.dart';
 import 'package:growmind/features/auth/presentation/bloc/login_bloc/auth_bloc.dart';
 import 'package:growmind/features/auth/presentation/bloc/signup_bloc/bloc/signup_bloc.dart';
 import 'package:growmind/features/auth/presentation/bloc/splash_bloc.dart';
@@ -134,7 +136,8 @@ class MyApp extends StatelessWidget {
                       getIt<NotificationRepositories>())),
               BlocProvider(
                   create: (context) =>
-                      SplashCubit(AuthLocalDataSourceImpl()))
+                      SplashCubit(AuthLocalDataSourceImpl())),
+                         BlocProvider(create: (context)=> GoogleAuthBloc(getIt<GoogleAuthUsecases>()))
             ],
             child: MaterialApp(
               navigatorKey: navigatorKey,

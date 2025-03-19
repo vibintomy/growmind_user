@@ -125,27 +125,37 @@ class ChatPage extends StatelessWidget {
                                             fontWeight: FontWeight.w700,
                                             fontSize: 17),
                                       ),
-                                      subtitle: BlocBuilder<LastChatBloc,
-                                              LastChatState>(
-                                          builder: (context, state) {
-                                        if (state is LastChatLoading) {
-                                          return const Center(
-                                            child: ShimmerLoading(),
-                                          );
-                                        } else if (state is LastChatLoaded) {
-                                          final lastChat = state.lastMessage;
+                                     subtitle: BlocBuilder<LastChatBloc, LastChatState>(
+                                    builder: (context, state) {
+                                      if (state is LastChatLoading) {
+                                        return const Center(
+                                          child: ShimmerLoading(),
+                                        );
+                                      } else if (state is LastChatLoaded) {
+                                        final lastChat = state.lastMessage;
+                                        
+                                        // Check if the lastChat list has a message for this index
+                                        if (lastChat.length > index) {
                                           return Text(
                                             lastChat[index].lastMessage,
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12),
                                           );
+                                        } else {
+                                          // If there's no message for this tutor, show the default text
+                                          return const Text(
+                                            'Tap to send message',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 12),
+                                          );
                                         }
-                                        return const Center(
-                                          child: Text('Tap to Send Message'),
-                                        );
-                                      }),
-                                    
+                                      }
+                                      return const Center(
+                                        child: Text('Tap to Send Message'),
+                                      );
+                                    }),
                                     ),
                                   ),
                                   kheight,

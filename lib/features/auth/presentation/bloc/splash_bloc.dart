@@ -84,20 +84,15 @@ class SplashCubit extends Cubit<SplashState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       bool? isFirstLaunch = prefs.getBool('isFirstLaunch');
-
       if (navigatorKey.currentContext?.mounted ?? false) {
-        if (isFirstLaunch == null || isFirstLaunch) {
-       
+        if (isFirstLaunch == null || isFirstLaunch) {      
           navigatorKey.currentState?.pushReplacementNamed('/welcomePage');
-
           prefs.setBool('isFirstLaunch', false);
-        } else {
-         
+        } else {         
           checkLogin();
         }
       }
-    } catch (e) {
-     
+    } catch (e) {    
       if (navigatorKey.currentContext?.mounted ?? false) {
         navigatorKey.currentState?.pushReplacementNamed('/login');
       }

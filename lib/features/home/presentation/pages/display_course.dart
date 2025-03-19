@@ -239,6 +239,7 @@ class DisplayCourse extends StatelessWidget {
                                 builder: (context) => PaymentScreen(
                                   coursePrice: int.parse(coursePrice),
                                   courseName: subCategory,
+                                  section: sections,
                                       courseId: id,
                                       createdBy: createdBy,
                                     )));

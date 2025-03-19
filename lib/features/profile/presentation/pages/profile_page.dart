@@ -9,6 +9,7 @@ import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/pr
 import 'package:growmind/features/profile/presentation/bloc/profile_bloc/bloc/profile_state.dart';
 import 'package:growmind/features/profile/presentation/pages/help_center.dart';
 import 'package:growmind/features/profile/presentation/pages/my_courses.dart';
+import 'package:growmind/features/profile/presentation/pages/settings.dart';
 import 'package:growmind/features/profile/presentation/pages/terms_and_contions.dart';
 import 'package:growmind/features/profile/presentation/pages/update_profile.dart';
 import 'package:growmind/features/profile/presentation/widgets/aler_box.dart';
@@ -97,7 +98,7 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          profile.displayName,
+                          profile.displayName??'ni ',
                           style: const TextStyle(
                               color: Color.fromRGBO(255, 255, 255, 1),
                               fontSize: 25,
@@ -105,7 +106,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                         kheight,
                         Text(
-                          profile.email,
+                          profile.email??'@gmail.com',
                           style: const TextStyle(
                               color: textColor,
                               fontSize: 15,
@@ -131,7 +132,7 @@ class ProfilePage extends StatelessWidget {
                             await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => UpdatePage()));
+                                    builder: (context) =>const SettingsPage()));
                             final user = FirebaseAuth.instance.currentUser;
                             // ignore: use_build_context_synchronously
                             context
@@ -141,12 +142,12 @@ class ProfilePage extends StatelessWidget {
                           child: const Row(
                             children: [
                               Icon(
-                                Icons.person,
-                                color: Colors.blueAccent,
+                                Icons.settings,
+                                color: Colors.grey,
                               ),
                               kwidth,
                               Text(
-                                'Edit Profile',
+                                'Settings',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               Spacer(),
@@ -183,72 +184,10 @@ class ProfilePage extends StatelessWidget {
                             ],
                           ),
                         ),
+                      
                         kheight2,
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.notifications,
-                              color: greyColor,
-                            ),
-                            kwidth,
-                            Text(
-                              'Notifications',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            Icon(Icons.arrow_right)
-                          ],
-                        ),
-                        kheight2,
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const TermsAndConditionsPage()));
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.security,
-                                color: Colors.green,
-                              ),
-                              kwidth,
-                              Text(
-                                'Terms & conditions',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Spacer(),
-                              Icon(Icons.arrow_right)
-                            ],
-                          ),
-                        ),
-                        kheight2,
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HelpCenter()));
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.help_center,
-                                color: Colors.purple,
-                              ),
-                              kwidth,
-                              Text(
-                                'Help Center',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Spacer(),
-                              Icon(Icons.arrow_right)
-                            ],
-                          ),
-                        ),
-                        kheight2,
+                       
+                       
                         alertBox(context),
                       ],
                     ),

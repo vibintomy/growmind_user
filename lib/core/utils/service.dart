@@ -5,7 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:growmind/core/utils/cloudinary.dart';
 import 'package:growmind/core/utils/notification_service.dart';
 import 'package:growmind/features/auth/data/datasources/auth_local_data_source.dart';
-import 'package:growmind/features/auth/presentation/bloc/splash_bloc.dart';
+import 'package:growmind/features/auth/data/repositories/google_auth_repo_impl.dart';
+import 'package:growmind/features/auth/domain/repositories/google_auth_repositories.dart';
+import 'package:growmind/features/auth/domain/usecases/google_auth_usecases.dart';
+import 'package:growmind/features/auth/presentation/bloc/google_auth_bloc/google_auth_bloc.dart';
 import 'package:growmind/features/chat/data/datasource/chat_mentor_datasource_impl.dart';
 import 'package:growmind/features/chat/data/datasource/chat_remot_datasource_impl.dart';
 import 'package:growmind/features/chat/data/datasource/chat_remote_datasource.dart';
@@ -142,7 +145,11 @@ void setUp() {
       FCMDatasourceImpl(getIt<FirebaseMessaging>(), getIt<http.Client>()));
   getIt.registerLazySingleton<NotificationRepositories>(
       () => NotificationRepoImpl(getIt<FCMDatasource>()));
-
+  getIt.registerLazySingleton<AuthLocalDataSource>(
+      () => AuthLocalDataSourceImpl());
+  getIt.registerLazySingleton<GoogleAuthRepositories>(() =>
+      GoogleAuthRepositoryImpl(
+          authLocalDataSource: getIt<AuthLocalDataSource>()));
 // Domain Layer
   getIt.registerLazySingleton(() => GetProfile(repo: getIt<ProfileRepo>()));
   getIt.registerLazySingleton(
@@ -172,6 +179,8 @@ void setUp() {
   getIt.registerLazySingleton(() => MyCoursesUsecases(getIt<MyCoursesRepo>()));
   getIt.registerLazySingleton(
       () => SendNotificationUsecases(getIt<NotificationRepositories>()));
+  getIt.registerLazySingleton(
+      () => GoogleAuthUsecases(getIt<GoogleAuthRepositories>()));
   // Presentation Layer
 
   getIt.registerFactory(() => ProfileBloc(getIt<GetProfile>()));
@@ -200,5 +209,5 @@ void setUp() {
   getIt.registerFactory(() => MyCoursesBloc(getIt<MyCoursesUsecases>()));
   getIt.registerFactory(() => NotificationBloc(
       getIt<SendNotificationUsecases>(), getIt<NotificationRepositories>()));
- 
+  getIt.registerFactory(() => GoogleAuthBloc(getIt<GoogleAuthUsecases>()));
 }

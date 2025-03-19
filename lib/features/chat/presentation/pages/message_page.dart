@@ -29,6 +29,9 @@ class MessagePage extends HookWidget {
     final messageController = useTextEditingController();
     final scrollController = useScrollController();
 
+    // Listen for state changes to scroll to bottom when new messages arrive
+    final chatStateListener = useState<ChatState?>(null);
+    
     useEffect(() {
       final userId = FirebaseAuth.instance.currentUser;
       context.read<ChatBloc>().add(LoadMessages(receiverId, userId!.uid));
@@ -36,12 +39,24 @@ class MessagePage extends HookWidget {
       return null;
     }, []);
 
+    void scrollToBottom() {
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            0, // Since we're using reverse: true, 0 is the bottom of the list
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+
     void sendMessage() {
       final userId = FirebaseAuth.instance.currentUser;
       final text = messageController.text.trim();
       if (text.isNotEmpty) {
         final message = Message(
-   
           senderId: userId!.uid,
           receiverId: receiverId,
           timeStamp: DateTime.now(),
@@ -58,18 +73,46 @@ class MessagePage extends HookWidget {
             senderId: userId.uid,
             timeStamp: DateTime.now());
       
-      context.read<NotificationBloc>().add(SendNotification(notification));
-      
+        context.read<NotificationBloc>().add(SendNotification(notification));
+        
         messageController.clear();
-
-        Future.delayed(const Duration(milliseconds: 300), () {
-          scrollController.animateTo(
-            scrollController.position.maxScrollExtent + 100,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        });
+        
+       
+        scrollToBottom();
       }
+    }
+
+    String formatMessageDate(DateTime date) {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final yesterday = today.subtract(const Duration(days: 1));
+      final messageDate = DateTime(date.year, date.month, date.day);
+
+      if (messageDate == today) {
+        return "Today";
+      } else if (messageDate == yesterday) {
+        return "Yesterday";
+      } else {
+        return DateFormat('MMMM d, y').format(date);
+      }
+    }
+
+  
+    bool shouldShowDateHeader(List<Message> messages, int index) {
+      if (index == messages.length - 1) {
+      
+        return true;
+      }
+      
+      final currentMessage = messages[index];
+      final previousMessage = messages[index + 1]; 
+      
+      final currentDate = DateTime.parse(currentMessage.timeStamp.toString());
+      final previousDate = DateTime.parse(previousMessage.timeStamp.toString());
+      
+      return currentDate.day != previousDate.day || 
+             currentDate.month != previousDate.month || 
+             currentDate.year != previousDate.year;
     }
 
     return Scaffold(
@@ -104,7 +147,16 @@ class MessagePage extends HookWidget {
           ],
         ),
       ),
-      body: BlocBuilder<ChatBloc, ChatState>(
+      body: BlocConsumer<ChatBloc, ChatState>(
+        listener: (context, state) {
+        
+          if (state is ChatLoaded && (chatStateListener.value == null || 
+             (chatStateListener.value is ChatLoaded && 
+              (chatStateListener.value as ChatLoaded).message.length != state.message.length))) {
+            scrollToBottom();
+          }
+          chatStateListener.value = state;
+        },
         builder: (context, state) {
           if (state is ChatLoading) {
             return const Center(
@@ -132,32 +184,64 @@ class MessagePage extends HookWidget {
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     final isMe = message.senderId == receiverId;
+                    final showDateHeader = shouldShowDateHeader(messages, index);
+                    final messageDate = DateTime.parse(message.timeStamp.toString());
 
-                    return Align(
-                      alignment:
-                          isMe ? Alignment.centerLeft : Alignment.centerRight,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.grey[300] : mainColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          children: [
-                         
-                            Text(
-                              message.message,
-                              style: TextStyle(
-                                color: isMe ? Colors.black : Colors.white,
+                    return Column(
+                      children: [
+                        if (showDateHeader)
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              formatMessageDate(messageDate),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
                             ),
-                            Text(DateFormat.Hm().format(
-                                DateTime.parse(message.timeStamp.toString()))),
-                          ],
+                          ),
+                        Align(
+                          alignment:
+                              isMe ? Alignment.centerLeft : Alignment.centerRight,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isMe ? Colors.grey[300] : mainColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  message.message,
+                                  style: TextStyle(
+                                    color: isMe ? Colors.black : Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  DateFormat.Hm().format(messageDate),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isMe ? Colors.black54 : Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 ),
@@ -187,6 +271,7 @@ class MessagePage extends HookWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
+                  onSubmitted: (_) => sendMessage(),
                 ),
               ),
               kwidth,

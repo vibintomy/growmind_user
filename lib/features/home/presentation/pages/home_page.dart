@@ -30,8 +30,8 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final profilebloc = context.read<ProfileBloc>();
-    profilebloc.add(LoadProfileEvent(user!.uid ?? ""));
-    context.read<PurchasedBloc>().add(PurchasedCourseEvent(user!.uid));
+    profilebloc.add(LoadProfileEvent(user!.uid ));
+    context.read<PurchasedBloc>().add(PurchasedCourseEvent(user.uid));
     context.read<TopCoursesBloc>().add(FetchTopCourseEvent());
     return Scaffold(
       backgroundColor: textColor,
@@ -60,31 +60,7 @@ class HomePage extends StatelessWidget {
                       }
                       return const Text('');
                     }),
-                    Container(
-                        height: 50,
-                        width: 100,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black,
-                        ),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Container(
-                                height: 45,
-                                width: 95,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                child: IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                        Icons.notifications_outlined)),
-                              ),
-                            ),
-                          ],
-                        ))
+                   
                   ],
                 ),
                 const Text(
