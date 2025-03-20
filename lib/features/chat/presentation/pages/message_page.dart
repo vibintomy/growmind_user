@@ -29,7 +29,6 @@ class MessagePage extends HookWidget {
     final messageController = useTextEditingController();
     final scrollController = useScrollController();
 
-    // Listen for state changes to scroll to bottom when new messages arrive
     final chatStateListener = useState<ChatState?>(null);
     
     useEffect(() {

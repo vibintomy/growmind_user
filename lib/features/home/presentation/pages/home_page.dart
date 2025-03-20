@@ -1,4 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,12 +8,8 @@ import 'package:growmind/features/home/presentation/bloc/purchased_bloc/purchase
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_bloc.dart';
 import 'package:growmind/features/home/presentation/bloc/top_courses_bloc/top_courses_event.dart';
 import 'package:growmind/features/home/presentation/pages/categories.dart';
-import 'package:growmind/features/home/presentation/pages/search_page.dart';
-import 'package:growmind/features/home/presentation/widgets/carousel1.dart';
-import 'package:growmind/features/home/presentation/widgets/carousel2.dart';
-import 'package:growmind/features/home/presentation/widgets/carousel3.dart';
-import 'package:growmind/features/home/presentation/widgets/custom_paint.dart';
-import 'package:growmind/features/home/presentation/widgets/custom_wavy_Shape.dart';
+import 'package:growmind/features/home/presentation/widgets/carousel_widget_page.dart';
+import 'package:growmind/features/home/presentation/widgets/home_search.dart';
 import 'package:growmind/features/home/presentation/widgets/index_indicator.dart';
 import 'package:growmind/features/home/presentation/widgets/spinning_container.dart';
 import 'package:growmind/features/home/presentation/widgets/top_courses.dart';
@@ -70,136 +66,9 @@ class HomePage extends StatelessWidget {
                       color: Color.fromARGB(255, 112, 110, 110)),
                 ),
                 kheight1,
-                Container(
-                  height: 50,
-                  width: 350,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                      color: textColor,
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(0, 3),
-                            spreadRadius: 0,
-                            blurRadius: 3,
-                            color: greyColor)
-                      ]),
-                  child: TextField(
-                    readOnly: true,
-                    showCursor: false,
-                    decoration: InputDecoration(
-                        hintText: 'Search',
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 10, top: 10, bottom: 10),
-                          child: Container(
-                            height: 15,
-                            width: 15,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: mainColor,
-                            ),
-                            child: const Icon(
-                              Icons.search,
-                              color: textColor,
-                            ),
-                          ),
-                        ),
-                        border: const OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                        )),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>const SearchPage()));
-                    },
-                  ),
-                ),
+                homeSearch(context),
                 kheight1,
-                CarouselSlider.builder(
-                  options: CarouselOptions(
-                    height: 250.0,
-                    autoPlay: true,
-                    enableInfiniteScroll: true,
-                    autoPlayInterval: const Duration(seconds: 3),
-                    viewportFraction: 0.8,
-                    onPageChanged: (index, reason) {
-                      currentIndex.value = index;
-                    },
-                  ),
-                  itemCount: 3,
-                  itemBuilder: (context, index, realIndex) {
-                    Color? containerColor;
-                    Widget? topShape;
-                    Widget? bottomShape;
-                    Widget? centerData;
-                    if (index == 0) {
-                      containerColor = Colors.green;
-                      topShape = const CustomPaintWidget1();
-                      bottomShape = const CustomWavyShape1();
-                      centerData = const Carousel1();
-                    } else if (index == 1) {
-                      containerColor = Colors.blue;
-                      topShape = const CustomPaintWidget2();
-                      bottomShape = const CustomWavyShape2();
-                      centerData = const Carousel3();
-                    } else {
-                      containerColor = const Color(0xFFFEA384);
-                      topShape = const CustomPaintWidget();
-                      bottomShape = const CustomWavyShape();
-                      centerData = const Carousel2();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Container(
-                          height: 250,
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: containerColor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(30)),
-                            boxShadow: const [
-                              BoxShadow(
-                                  offset: Offset(0, 3),
-                                  spreadRadius: 0,
-                                  blurRadius: 3,
-                                  color: greyColor)
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                child: SizedBox(
-                                  height: 120,
-                                  width: 180,
-                                  child: topShape,
-                                ),
-                              ),
-                              Positioned(
-                                  left: 30,
-                                  right: 5,
-                                  top: 80,
-                                  bottom: 5,
-                                  child: centerData),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: SizedBox(
-                                    height: 120,
-                                    width: 180,
-                                    child: bottomShape),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                carouselWidget(currentIndex),
                 kheight,
                 indexIndicator(currentIndex: currentIndex),
                 kheight,
@@ -303,4 +172,8 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  
+
+ 
 }

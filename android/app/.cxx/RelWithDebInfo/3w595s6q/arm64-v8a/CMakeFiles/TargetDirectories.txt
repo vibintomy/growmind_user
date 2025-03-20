@@ -1,0 +1,2 @@
+C:/Users/HP/growMind/growmind/android/app/.cxx/RelWithDebInfo/3w595s6q/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/HP/growMind/growmind/android/app/.cxx/RelWithDebInfo/3w595s6q/arm64-v8a/CMakeFiles/rebuild_cache.dir
