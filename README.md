@@ -1,16 +1,34 @@
-# growmind
+# 📚 GrowMind – E-Learning App
 
-A new Flutter project.
+GrowMind is a full-featured e-learning platform built using Flutter. It empowers users to learn from tutors, enables tutors to manage content, and provides an admin interface for overseeing the platform. The app supports video-based courses, secure payments, chat functionality, and role-based access.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features
 
-A few resources to get you started if this is your first Flutter project:
+### 👨‍🎓 User
+- Browse and purchase courses
+- Watch video content
+- Chat with tutors
+- Track learning progress
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 👩‍🏫 Tutor
+- Upload and manage courses
+- Edit profile and UPI payment details
+- Communicate with students
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 🧑‍💼 Admin (Web)
+- Approve tutors and courses
+- Manage platform-wide data and access
+
+---
+
+## 🧱 Architecture
+
+The app follows **Clean Architecture** with **BLoC State Management**, structured into:
+
+- **Presentation Layer**: Flutter UI + Bloc logic
+- **Domain Layer**: Entities and Use Cases (pure Dart)
+- **Data Layer**: Firebase service integration and repositories
+
+This separation ensures maintainability, testability, and scalability.
